@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 
+import '../../features/anime_details/pages/anime_details_screen.dart';
 import '../../features/home/home_screen.dart';
 import '../../features/search/pages/search_screen.dart';
 import '../../features/splash/splash_screen.dart';
@@ -20,6 +21,17 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/search',
       builder: (context, state) => const SearchScreen(),
+    ),
+
+    GoRoute(
+      path: '/anime/:id',
+      builder: (context, state) {
+        final animeId = int.parse(state.pathParameters['id']!);
+
+        return AnimeDetailsScreen(
+          animeId: animeId,
+        );
+      },
     ),
   ],
 );
