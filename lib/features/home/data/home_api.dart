@@ -7,7 +7,10 @@ class HomeApi {
   Future<QueryResult> getTrendingAnime() {
     return GraphQLService.client.query(
       QueryOptions(
-        document: gql(HomeQueries.trendingAnime),
+        document: gql(
+          HomeQueries.trendingAnime,
+        ),
+        fetchPolicy: FetchPolicy.networkOnly,
       ),
     );
   }
@@ -15,7 +18,10 @@ class HomeApi {
   Future<QueryResult> getThisSeasonAnime() {
     return GraphQLService.client.query(
       QueryOptions(
-        document: gql(HomeQueries.thisSeasonAnime),
+        document: gql(
+          HomeQueries.thisSeasonAnime,
+        ),
+        fetchPolicy: FetchPolicy.networkOnly,
       ),
     );
   }
@@ -23,7 +29,10 @@ class HomeApi {
   Future<QueryResult> getJustReleasedAnime() {
     return GraphQLService.client.query(
       QueryOptions(
-        document: gql(HomeQueries.justReleasedAnime),
+        document: gql(
+          HomeQueries.justReleasedAnime,
+        ),
+        fetchPolicy: FetchPolicy.networkOnly,
       ),
     );
   }
@@ -31,7 +40,10 @@ class HomeApi {
   Future<QueryResult> getPopularThisWeek() {
     return GraphQLService.client.query(
       QueryOptions(
-        document: gql(HomeQueries.popularThisWeek),
+        document: gql(
+          HomeQueries.popularThisWeek,
+        ),
+        fetchPolicy: FetchPolicy.networkOnly,
       ),
     );
   }

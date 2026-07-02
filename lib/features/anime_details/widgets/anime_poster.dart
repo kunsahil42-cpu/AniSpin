@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class AnimePoster extends StatelessWidget {
@@ -11,32 +12,43 @@ class AnimePoster extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 220,
-      width: 150,
+      height: 270,
+      width: 180,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: const [
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
           BoxShadow(
-            blurRadius: 12,
-            color: Colors.black26,
-            offset: Offset(0, 6),
+            color: Colors.black.withValues(alpha: 0.45),
+            blurRadius: 30,
+            spreadRadius: 2,
+            offset: const Offset(0, 14),
           ),
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(18),
-        child: Image.network(
-          imageUrl,
+        borderRadius: BorderRadius.circular(24),
+        child: CachedNetworkImage(
+          imageUrl: imageUrl,
           fit: BoxFit.cover,
-          errorBuilder: (_, _, _) {
-            return Container(
-              color: Colors.grey.shade300,
-              child: const Icon(
-                Icons.broken_image,
-                size: 60,
+          fadeInDuration: const Duration(milliseconds: 300),
+          placeholder: (context, url) => Container(
+            color: Colors.grey.shade900,
+            child: const Center(
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
               ),
-            );
-          },
+            ),
+          ),
+          errorWidget: (context, url, error) => Container(
+            color: Colors.grey.shade800,
+            child: const Center(
+              child: Icon(
+                Icons.movie_rounded,
+                color: Colors.white54,
+                size: 70,
+              ),
+            ),
+          ),
         ),
       ),
     );

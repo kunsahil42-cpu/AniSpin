@@ -13,6 +13,8 @@ dependencies:
 
   cupertino_icons: ^1.0.8
 
+  shimmer: ^3.0.0
+
   # State Management
   flutter_riverpod: ^2.6.1
 

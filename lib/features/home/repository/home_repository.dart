@@ -28,20 +28,24 @@ class HomeRepository {
         break;
 
       case HomeSection.continueWatching:
-        // Temporary
+        // Temporary until Continue Watching is implemented
         result = await _api.getTrendingAnime();
         break;
     }
 
     if (result.hasException) {
-      throw Exception(result.exception.toString());
+      throw Exception(
+        result.exception.toString(),
+      );
     }
 
-    final List media = result.data!['Page']['media'];
+    final List media =
+        result.data!['Page']['media'];
 
     return media
-        .map(
-          (anime) => HomeAnimeModel.fromJson(anime),
+        .map<HomeAnimeModel>(
+          (anime) =>
+              HomeAnimeModel.fromJson(anime),
         )
         .toList();
   }

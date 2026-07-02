@@ -1,3 +1,6 @@
+import 'dart:ui';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class AnimeBanner extends StatelessWidget {
@@ -10,36 +13,77 @@ class AnimeBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hasBanner =
+        imageUrl.trim().isNotEmpty &&
+        imageUrl != "null";
+
     return SizedBox(
-      height: 220,
+      height: 300,
       width: double.infinity,
       child: Stack(
         fit: StackFit.expand,
         children: [
-          Image.network(
-            imageUrl,
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) {
-              return Container(
-                color: Colors.grey.shade800,
-                child: const Icon(
-                  Icons.image_not_supported,
-                  color: Colors.white,
-                  size: 60,
+          if (hasBanner)
+            CachedNetworkImage(
+              imageUrl: imageUrl,
+              fit: BoxFit.cover,
+              fadeInDuration: const Duration(
+                milliseconds: 350,
+              ),
+              placeholder: (context, url) => Container(
+                color: Colors.grey.shade900,
+              ),
+              errorWidget: (context, url, _) => Container(
+                color: Colors.grey.shade900,
+                child: const Center(
+                  child: Icon(
+                    Icons.movie_rounded,
+                    color: Colors.white54,
+                    size: 70,
+                  ),
                 ),
-              );
-            },
+              ),
+            )
+          else
+            Container(
+              color: Colors.grey.shade900,
+              child: const Center(
+                child: Icon(
+                  Icons.movie_rounded,
+                  color: Colors.white54,
+                  size: 70,
+                ),
+              ),
+            ),
+
+          // Cinematic blur
+          Positioned.fill(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(
+                sigmaX: 2,
+                sigmaY: 2,
+              ),
+              child: Container(
+                color: Colors.transparent,
+              ),
+            ),
           ),
 
-          Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Colors.transparent,
-                  Colors.black87,
-                ],
+          // Premium gradient
+          Positioned.fill(
+            child: DecoratedBox(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(0x00000000),
+                    Color(0x22000000),
+                    Color(0x88000000),
+                    Color(0xDD000000),
+                    Color(0xFF0F1117),
+                  ],
+                ),
               ),
             ),
           ),

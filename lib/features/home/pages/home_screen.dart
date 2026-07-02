@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 import '../enums/home_section.dart';
 import '../widgets/home_header.dart';
@@ -14,50 +15,92 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: ListView(
-        children: const [
-          HomeHeader(),
-          HomeSearchBar(),
-          QuickActions(),
+        children: [
+          const HomeHeader()
+              .animate()
+              .fadeIn(duration: 400.ms)
+              .slideY(begin: -0.2),
 
-          // 🔥 Trending
-          SectionTitle(title: "🔥 Trending"),
-          HorizontalList(
+          const HomeSearchBar()
+              .animate()
+              .fadeIn(
+                delay: 100.ms,
+                duration: 400.ms,
+              )
+              .slideY(begin: -0.2),
+
+          const QuickActions()
+              .animate()
+              .fadeIn(
+                delay: 200.ms,
+                duration: 400.ms,
+              )
+              .slideY(begin: -0.2),
+
+          const SectionTitle(
+            title: "🔥 Trending",
+          )
+              .animate()
+              .fadeIn(delay: 300.ms)
+              .slideX(begin: -0.1),
+
+          const HorizontalList(
             section: HomeSection.trending,
-          ),
+          ).animate().fadeIn(delay: 350.ms),
 
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
 
-          // ⭐ Continue Watching
-          SectionTitle(title: "⭐ Continue Watching"),
-          HorizontalList(
+          const SectionTitle(
+            title: "⭐ Continue Watching",
+          )
+              .animate()
+              .fadeIn(delay: 450.ms)
+              .slideX(begin: -0.1),
+
+          const HorizontalList(
             section: HomeSection.continueWatching,
-          ),
+          ).animate().fadeIn(delay: 500.ms),
 
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
 
-          // 🌸 This Season
-          SectionTitle(title: "🌸 This Season"),
-          HorizontalList(
+          const SectionTitle(
+            title: "🌸 This Season",
+          )
+              .animate()
+              .fadeIn(delay: 600.ms)
+              .slideX(begin: -0.1),
+
+          const HorizontalList(
             section: HomeSection.thisSeason,
-          ),
+          ).animate().fadeIn(delay: 650.ms),
 
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
 
-          // 🆕 Just Released
-          SectionTitle(title: "🆕 Just Released"),
-          HorizontalList(
+          const SectionTitle(
+            title: "🆕 Just Released",
+          )
+              .animate()
+              .fadeIn(delay: 750.ms)
+              .slideX(begin: -0.1),
+
+          const HorizontalList(
             section: HomeSection.justReleased,
-          ),
+          ).animate().fadeIn(delay: 800.ms),
 
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
 
-          // 🏆 Popular This Week
-          SectionTitle(title: "🏆 Popular This Week"),
-          HorizontalList(
+          const SectionTitle(
+            title: "🏆 Popular This Week",
+          )
+              .animate()
+              .fadeIn(delay: 900.ms)
+              .slideX(begin: -0.1),
+
+          const HorizontalList(
             section: HomeSection.popularThisWeek,
-          ),
+          ).animate().fadeIn(delay: 950.ms),
 
-          SizedBox(height: 30),
+          const SizedBox(height: 30),
         ],
       ),
     );
