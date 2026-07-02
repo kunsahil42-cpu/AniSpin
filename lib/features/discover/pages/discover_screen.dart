@@ -1,0 +1,204 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../enums/discover_mode.dart';
+import '../pages/discover_results_screen.dart';
+import '../providers/discover_provider.dart';
+import '../widgets/anime_of_day_card.dart';
+import '../widgets/discover_section.dart';
+import '../widgets/discover_tile.dart';
+import '../widgets/manga_of_day_card.dart';
+
+class DiscoverScreen extends ConsumerWidget {
+  const DiscoverScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final anime = ref.watch(animeOfTheDayProvider);
+    final manga = ref.watch(mangaOfTheDayProvider);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("✨ Discover"),
+        centerTitle: true,
+      ),
+      body: ListView(
+        children: [
+          const DiscoverSection(
+            title: "Anime of the Day",
+            icon: Icons.wb_sunny,
+          ),
+
+          anime.when(
+            loading: () => const Center(
+              child: Padding(
+                padding: EdgeInsets.all(24),
+                child: CircularProgressIndicator(),
+              ),
+            ),
+            error: (e, _) => Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(e.toString()),
+            ),
+            data: (animeData) => AnimeOfDayCard(
+              anime: animeData,
+            ),
+          ),
+
+          const DiscoverSection(
+            title: "Manga of the Day",
+            icon: Icons.menu_book,
+          ),
+
+          manga.when(
+            loading: () => const Center(
+              child: Padding(
+                padding: EdgeInsets.all(24),
+                child: CircularProgressIndicator(),
+              ),
+            ),
+            error: (e, _) => Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(e.toString()),
+            ),
+            data: (mangaData) => MangaOfDayCard(
+              manga: mangaData,
+            ),
+          ),
+
+          const DiscoverSection(
+            title: "Explore",
+            icon: Icons.explore,
+          ),
+
+          DiscoverTile(
+            icon: Icons.casino,
+            title: "🎲 Roll Anime",
+            subtitle: "Find a random anime",
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const DiscoverResultsScreen(
+                    mode: DiscoverMode.randomAnime,
+                  ),
+                ),
+              );
+            },
+          ),
+
+          DiscoverTile(
+            icon: Icons.card_giftcard,
+            title: "🎁 Surprise Me",
+            subtitle: "Anime • Manga • Both",
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const DiscoverResultsScreen(
+                    mode: DiscoverMode.surpriseMe,
+                  ),
+                ),
+              );
+            },
+          ),
+
+          DiscoverTile(
+            icon: Icons.local_fire_department,
+            title: "🔥 Trending Now",
+            subtitle: "Most popular right now",
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const DiscoverResultsScreen(
+                    mode: DiscoverMode.trending,
+                  ),
+                ),
+              );
+            },
+          ),
+
+          DiscoverTile(
+            icon: Icons.diamond,
+            title: "💎 Hidden Gems",
+            subtitle: "Underrated masterpieces",
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const DiscoverResultsScreen(
+                    mode: DiscoverMode.hiddenGems,
+                  ),
+                ),
+              );
+            },
+          ),
+
+          DiscoverTile(
+            icon: Icons.calendar_today,
+            title: "📅 Airing This Season",
+            subtitle: "Currently releasing anime",
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const DiscoverResultsScreen(
+                    mode: DiscoverMode.airing,
+                  ),
+                ),
+              );
+            },
+          ),
+
+          DiscoverTile(
+            icon: Icons.star,
+            title: "⭐ Top Rated",
+            subtitle: "Highest rated anime",
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const DiscoverResultsScreen(
+                    mode: DiscoverMode.topRated,
+                  ),
+                ),
+              );
+            },
+          ),
+
+          DiscoverTile(
+            icon: Icons.mood,
+            title: "🎭 Mood Roll",
+            subtitle: "Choose by your mood",
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const DiscoverResultsScreen(
+                    mode: DiscoverMode.mood,
+                  ),
+                ),
+              );
+            },
+          ),
+
+          DiscoverTile(
+            icon: Icons.tune,
+            title: "⚙ Advanced Filters",
+            subtitle: "Customize your discovery",
+            onTap: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("Coming soon"),
+                ),
+              );
+            },
+          ),
+
+          const SizedBox(height: 30),
+        ],
+      ),
+    );
+  }
+}
