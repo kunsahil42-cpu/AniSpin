@@ -46,10 +46,11 @@ class HorizontalList extends ConsumerWidget {
               final item = anime[index];
 
               return AnimeCard(
+                animeId: item.id,
                 title: item.title,
                 rating: (item.averageScore ?? "-").toString(),
                 episodes: (item.episodes ?? "?").toString(),
-               imageUrl: item.coverImage,
+                imageUrl: item.coverImage,
              );
             },
           );

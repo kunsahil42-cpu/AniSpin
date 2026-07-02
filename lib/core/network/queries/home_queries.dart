@@ -17,6 +17,7 @@ query TrendingAnime {
         extraLarge
       }
       averageScore
+      episodes
       genres
     }
   }
@@ -42,6 +43,7 @@ query ThisSeasonAnime {
         extraLarge
       }
       averageScore
+      episodes
       genres
     }
   }
@@ -66,6 +68,7 @@ query JustReleasedAnime {
         extraLarge
       }
       averageScore
+      episodes
       genres
     }
   }
@@ -90,6 +93,7 @@ query PopularThisWeek {
         extraLarge
       }
       averageScore
+      episodes
       genres
     }
   }
