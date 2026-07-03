@@ -3,6 +3,7 @@ import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../../features/favorites/models/favorite_anime.dart';
+import '../../features/favorites/models/favorite_manga.dart';
 
 class IsarService {
   IsarService._();
@@ -19,6 +20,7 @@ class IsarService {
     _isar = await Isar.open(
       [
         FavoriteAnimeSchema,
+        FavoriteMangaSchema,
       ],
       directory: directory.path,
       inspector: kDebugMode,
