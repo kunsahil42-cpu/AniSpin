@@ -68,12 +68,8 @@ class DiscoverScreen extends ConsumerWidget {
             data: (mangaData) => MangaOfDayCard(
               manga: mangaData,
               onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text(
-                      "Manga Details coming soon",
-                    ),
-                  ),
+                context.push(
+                  '/manga/${mangaData.id}',
                 );
               },
             ),

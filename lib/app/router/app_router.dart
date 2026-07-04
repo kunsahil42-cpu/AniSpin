@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/anime_details/pages/anime_details_screen.dart';
 import '../../features/favorites/pages/favorites_screen.dart';
+import '../../features/manga_details/pages/manga_details_screen.dart';
 import '../../features/navigation/pages/main_navigation_screen.dart';
 import '../../features/search/pages/search_screen.dart';
 import '../../features/splash/splash_screen.dart';
@@ -38,6 +39,19 @@ final GoRouter appRouter = GoRouter(
 
         return AnimeDetailsScreen(
           animeId: animeId,
+        );
+      },
+    ),
+
+    GoRoute(
+      path: '/manga/:id',
+      builder: (context, state) {
+        final mangaId = int.parse(
+          state.pathParameters['id']!,
+        );
+
+        return MangaDetailsScreen(
+          mangaId: mangaId,
         );
       },
     ),
