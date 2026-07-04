@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../enums/discover_mode.dart';
 import '../providers/discover_provider.dart';
@@ -15,9 +16,6 @@ class DiscoverResultsScreen extends ConsumerWidget {
 
   String get pageTitle {
     switch (mode) {
-      case DiscoverMode.randomAnime:
-        return "🎲 Roll Anime";
-
       case DiscoverMode.trending:
         return "🔥 Trending";
 
@@ -32,9 +30,6 @@ class DiscoverResultsScreen extends ConsumerWidget {
 
       case DiscoverMode.surpriseMe:
         return "🎁 Surprise Me";
-
-      case DiscoverMode.mood:
-        return "🎭 Mood Roll";
     }
   }
 
@@ -88,7 +83,9 @@ class DiscoverResultsScreen extends ConsumerWidget {
                 return AnimeGridTile(
                   anime: item,
                   onTap: () {
-                    // TODO: Navigate to Anime Details
+                    context.push(
+                      '/anime/${item.id}',
+                    );
                   },
                 );
               },

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../enums/discover_mode.dart';
 import '../pages/discover_results_screen.dart';
@@ -42,6 +43,9 @@ class DiscoverScreen extends ConsumerWidget {
             ),
             data: (animeData) => AnimeOfDayCard(
               anime: animeData,
+              onTap: () {
+                context.push('/anime/${animeData.id}');
+              },
             ),
           ),
 
@@ -63,28 +67,21 @@ class DiscoverScreen extends ConsumerWidget {
             ),
             data: (mangaData) => MangaOfDayCard(
               manga: mangaData,
+              onTap: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                      "Manga Details coming soon",
+                    ),
+                  ),
+                );
+              },
             ),
           ),
 
           const DiscoverSection(
             title: "Explore",
             icon: Icons.explore,
-          ),
-
-          DiscoverTile(
-            icon: Icons.casino,
-            title: "🎲 Roll Anime",
-            subtitle: "Find a random anime",
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const DiscoverResultsScreen(
-                    mode: DiscoverMode.randomAnime,
-                  ),
-                ),
-              );
-            },
           ),
 
           DiscoverTile(
@@ -95,7 +92,8 @@ class DiscoverScreen extends ConsumerWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => const DiscoverResultsScreen(
+                  builder: (_) =>
+                      const DiscoverResultsScreen(
                     mode: DiscoverMode.surpriseMe,
                   ),
                 ),
@@ -111,7 +109,8 @@ class DiscoverScreen extends ConsumerWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => const DiscoverResultsScreen(
+                  builder: (_) =>
+                      const DiscoverResultsScreen(
                     mode: DiscoverMode.trending,
                   ),
                 ),
@@ -127,7 +126,8 @@ class DiscoverScreen extends ConsumerWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => const DiscoverResultsScreen(
+                  builder: (_) =>
+                      const DiscoverResultsScreen(
                     mode: DiscoverMode.hiddenGems,
                   ),
                 ),
@@ -143,7 +143,8 @@ class DiscoverScreen extends ConsumerWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => const DiscoverResultsScreen(
+                  builder: (_) =>
+                      const DiscoverResultsScreen(
                     mode: DiscoverMode.airing,
                   ),
                 ),
@@ -159,38 +160,10 @@ class DiscoverScreen extends ConsumerWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => const DiscoverResultsScreen(
+                  builder: (_) =>
+                      const DiscoverResultsScreen(
                     mode: DiscoverMode.topRated,
                   ),
-                ),
-              );
-            },
-          ),
-
-          DiscoverTile(
-            icon: Icons.mood,
-            title: "🎭 Mood Roll",
-            subtitle: "Choose by your mood",
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const DiscoverResultsScreen(
-                    mode: DiscoverMode.mood,
-                  ),
-                ),
-              );
-            },
-          ),
-
-          DiscoverTile(
-            icon: Icons.tune,
-            title: "⚙ Advanced Filters",
-            subtitle: "Customize your discovery",
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text("Coming soon"),
                 ),
               );
             },

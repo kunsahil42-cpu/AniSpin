@@ -28,6 +28,7 @@ class AnimeDetailsScreen extends ConsumerWidget {
     );
 
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: anime.when(
         loading: () => const SkeletonDetails(),
 

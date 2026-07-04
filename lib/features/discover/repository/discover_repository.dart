@@ -12,15 +12,23 @@ class DiscoverRepository {
 
   int _dailyPage() {
     final now = DateTime.now();
-    final seed = now.year * 1000 + now.month * 100 + now.day;
+    final seed =
+        now.year * 1000 +
+        now.month * 100 +
+        now.day;
+
     return Random(seed).nextInt(500) + 1;
   }
 
   Future<DiscoverAnimeModel> getAnimeOfTheDay() async {
-    final result = await _api.getAnimeOfTheDay(_dailyPage());
+    final result = await _api.getAnimeOfTheDay(
+      _dailyPage(),
+    );
 
     if (result.hasException) {
-      throw Exception(result.exception.toString());
+      throw Exception(
+        result.exception.toString(),
+      );
     }
 
     final media = result.data?['Page']?['media'];
@@ -29,14 +37,20 @@ class DiscoverRepository {
       throw Exception('Anime not found');
     }
 
-    return DiscoverAnimeModel.fromJson(media.first);
+    return DiscoverAnimeModel.fromJson(
+      media.first,
+    );
   }
 
   Future<DiscoverMangaModel> getMangaOfTheDay() async {
-    final result = await _api.getMangaOfTheDay(_dailyPage());
+    final result = await _api.getMangaOfTheDay(
+      _dailyPage(),
+    );
 
     if (result.hasException) {
-      throw Exception(result.exception.toString());
+      throw Exception(
+        result.exception.toString(),
+      );
     }
 
     final media = result.data?['Page']?['media'];
@@ -45,25 +59,9 @@ class DiscoverRepository {
       throw Exception('Manga not found');
     }
 
-    return DiscoverMangaModel.fromJson(media.first);
-  }
-
-  Future<DiscoverAnimeModel> getRandomAnime() async {
-    final page = Random().nextInt(500) + 1;
-
-    final result = await _api.getRandomAnime(page);
-
-    if (result.hasException) {
-      throw Exception(result.exception.toString());
-    }
-
-    final media = result.data?['Page']?['media'];
-
-    if (media == null || media.isEmpty) {
-      throw Exception('Anime not found');
-    }
-
-    return DiscoverAnimeModel.fromJson(media.first);
+    return DiscoverMangaModel.fromJson(
+      media.first,
+    );
   }
 
   Future<List<DiscoverAnimeModel>> getAnimeList(
@@ -74,42 +72,51 @@ class DiscoverRepository {
 
     switch (mode) {
       case DiscoverMode.trending:
-        result = await _api.getTrendingAnime(page);
+        result = await _api.getTrendingAnime(
+          page,
+        );
         break;
 
       case DiscoverMode.hiddenGems:
-        result = await _api.getHiddenGems(page);
+        result = await _api.getHiddenGems(
+          page,
+        );
         break;
 
       case DiscoverMode.airing:
-        result = await _api.getAiringAnime(page);
+        result = await _api.getAiringAnime(
+          page,
+        );
         break;
 
       case DiscoverMode.topRated:
-        result = await _api.getTopRatedAnime(page);
-        break;
-
-      case DiscoverMode.randomAnime:
-        result = await _api.getTrendingAnime(page);
+        result = await _api.getTopRatedAnime(
+          page,
+        );
         break;
 
       case DiscoverMode.surpriseMe:
-        result = await _api.getTrendingAnime(page);
-        break;
-
-      case DiscoverMode.mood:
-        result = await _api.getTrendingAnime(page);
+        result = await _api.getTrendingAnime(
+          page,
+        );
         break;
     }
 
     if (result.hasException) {
-      throw Exception(result.exception.toString());
+      throw Exception(
+        result.exception.toString(),
+      );
     }
 
-    final List<dynamic> media = result.data?['Page']?['media'] ?? [];
+    final List<dynamic> media =
+        result.data?['Page']?['media'] ?? [];
 
     return media
-        .map((item) => DiscoverAnimeModel.fromJson(item))
+        .map(
+          (item) => DiscoverAnimeModel.fromJson(
+            item,
+          ),
+        )
         .toList();
   }
 }

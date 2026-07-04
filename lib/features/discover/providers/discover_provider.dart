@@ -12,20 +12,23 @@ final discoverRepositoryProvider =
 
 final animeOfTheDayProvider =
     FutureProvider<DiscoverAnimeModel>((ref) async {
-  return ref.read(discoverRepositoryProvider).getAnimeOfTheDay();
+  return ref
+      .read(discoverRepositoryProvider)
+      .getAnimeOfTheDay();
 });
 
 final mangaOfTheDayProvider =
     FutureProvider<DiscoverMangaModel>((ref) async {
-  return ref.read(discoverRepositoryProvider).getMangaOfTheDay();
+  return ref
+      .read(discoverRepositoryProvider)
+      .getMangaOfTheDay();
 });
 
-final randomAnimeProvider =
-    FutureProvider<DiscoverAnimeModel>((ref) async {
-  return ref.read(discoverRepositoryProvider).getRandomAnime();
-});
-
-final discoverListProvider = FutureProvider.family<
-    List<DiscoverAnimeModel>, DiscoverMode>((ref, mode) async {
-  return ref.read(discoverRepositoryProvider).getAnimeList(mode);
+final discoverListProvider =
+    FutureProvider.family<
+        List<DiscoverAnimeModel>,
+        DiscoverMode>((ref, mode) async {
+  return ref
+      .read(discoverRepositoryProvider)
+      .getAnimeList(mode);
 });
