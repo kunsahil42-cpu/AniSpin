@@ -300,6 +300,10 @@ class FavoritesScreen extends ConsumerWidget {
                       direction:
                           DismissDirection.endToStart,
                       confirmDismiss: (_) async {
+                        return true;
+                      },
+
+                      onDismissed: (_) async {
                         await ref
                             .read(
                               mangaFavoritesControllerProvider,
@@ -333,8 +337,7 @@ class FavoritesScreen extends ConsumerWidget {
                                 content: const Row(
                                   children: [
                                     Icon(
-                                      Icons
-                                          .check_circle_rounded,
+                                      Icons.check_circle_rounded,
                                       color: Colors.white,
                                     ),
                                     SizedBox(width: 12),
@@ -361,7 +364,7 @@ class FavoritesScreen extends ConsumerWidget {
                             );
                         }
 
-                        return true;
+                        
                       },
                       background: Container(
                         alignment:
