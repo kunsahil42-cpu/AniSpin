@@ -30,6 +30,13 @@ class _DescriptionSectionState
   @override
   Widget build(BuildContext context) {
     final description = _cleanText(widget.description);
+    final theme = Theme.of(context);
+    
+    final descriptionStyle = theme.textTheme.bodyMedium?.copyWith(
+      height: 1.6,
+      letterSpacing: 0.15,
+      color: theme.colorScheme.onSurface.withValues(alpha: 0.78),
+    );
 
     return Padding(
       padding: const EdgeInsets.symmetric(
@@ -37,17 +44,14 @@ class _DescriptionSectionState
         vertical: 8,
       ),
       child: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             "Synopsis",
-            style: Theme.of(context)
-                .textTheme
-                .titleLarge
-                ?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.w800,
+              letterSpacing: -0.2,
+            ),
           ),
 
           const SizedBox(height: 12),
@@ -59,21 +63,18 @@ class _DescriptionSectionState
                   : description,
               maxLines: 5,
               overflow: TextOverflow.fade,
-              style:
-                  Theme.of(context).textTheme.bodyMedium,
+              style: descriptionStyle,
             ),
             secondChild: Text(
               description.isEmpty
                   ? "No synopsis available."
                   : description,
-              style:
-                  Theme.of(context).textTheme.bodyMedium,
+              style: descriptionStyle,
             ),
             crossFadeState: _expanded
                 ? CrossFadeState.showSecond
                 : CrossFadeState.showFirst,
-            duration:
-                const Duration(milliseconds: 300),
+            duration: const Duration(milliseconds: 300),
           ),
 
           if (description.length > 220)
@@ -86,14 +87,11 @@ class _DescriptionSectionState
                   });
                 },
                 icon: Icon(
-                  _expanded
-                      ? Icons.expand_less
-                      : Icons.expand_more,
+                  _expanded ? Icons.expand_less : Icons.expand_more,
                 ),
                 label: Text(
-                  _expanded
-                      ? "Read Less"
-                      : "Read More",
+                  _expanded ? "Read Less" : "Read More",
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
             ),

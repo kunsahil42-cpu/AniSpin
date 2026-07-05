@@ -18,3 +18,7 @@ final homeSectionProvider =
         .getAnime(section);
   },
 );
+
+enum HomeType { anime, manga }
+
+final homeTypeProvider = StateProvider<HomeType>((ref) => HomeType.anime);

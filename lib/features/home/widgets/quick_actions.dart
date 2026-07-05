@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class QuickActions extends StatelessWidget {
   const QuickActions({super.key});
@@ -15,6 +16,7 @@ class QuickActions extends StatelessWidget {
               title: "Anime Roll",
               subtitle: "Random Anime",
               color: Colors.deepPurple,
+              onTap: () => context.push('/anime-roll'),
             ),
           ),
           const SizedBox(width: 16),
@@ -24,6 +26,7 @@ class QuickActions extends StatelessWidget {
               title: "Manga Roll",
               subtitle: "Random Manga",
               color: Colors.teal,
+              onTap: () => context.push('/manga-roll'),
             ),
           ),
         ],
@@ -37,12 +40,14 @@ class _ActionCard extends StatelessWidget {
   final String title;
   final String subtitle;
   final Color color;
+  final VoidCallback onTap;
 
   const _ActionCard({
     required this.icon,
     required this.title,
     required this.subtitle,
     required this.color,
+    required this.onTap,
   });
 
   @override
@@ -51,7 +56,7 @@ class _ActionCard extends StatelessWidget {
       elevation: 4,
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
-        onTap: () {},
+        onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.all(18),
           child: Column(

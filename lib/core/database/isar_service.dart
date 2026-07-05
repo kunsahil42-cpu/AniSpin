@@ -4,6 +4,8 @@ import 'package:path_provider/path_provider.dart';
 
 import '../../features/favorites/models/favorite_anime.dart';
 import '../../features/favorites/models/favorite_manga.dart';
+import '../../features/tracker/models/watch_progress.dart';
+import '../../features/tracker/models/reading_progress.dart';
 
 class IsarService {
   IsarService._();
@@ -21,6 +23,8 @@ class IsarService {
       [
         FavoriteAnimeSchema,
         FavoriteMangaSchema,
+        WatchProgressSchema,
+        ReadingProgressSchema,
       ],
       directory: directory.path,
       inspector: kDebugMode,

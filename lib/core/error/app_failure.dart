@@ -38,10 +38,10 @@ class AppFailure implements Exception {
         "Try again in a moment, or check your internet connection.",
       );
 
-  factory AppFailure.server() => const AppFailure(
+  factory AppFailure.server([String? message]) => AppFailure(
         AppFailureType.server,
         "Something went wrong",
-        "Please try again later.",
+        message ?? "Please try again later.",
       );
 
   factory AppFailure.notFound([String? message]) => AppFailure(
@@ -84,15 +84,17 @@ class AppFailure implements Exception {
       final raw = '${link.originalException ?? ''} $link';
       if (_looksLikeNetwork(raw)) return AppFailure.network();
       // A LinkException that isn't a network problem = a bad/failed response.
-      return AppFailure.server();
+      return AppFailure.server('LinkException: $raw');
     }
 
-    if (exception.graphqlErrors.isNotEmpty) return AppFailure.server();
+    if (exception.graphqlErrors.isNotEmpty) {
+      return AppFailure.server('GraphQLErrors: ${exception.graphqlErrors.map((e) => e.message).join(", ")}');
+    }
 
     // No link error and no graphql errors, but still flagged as an exception.
     return _looksLikeNetwork(exception.toString())
         ? AppFailure.network()
-        : AppFailure.server();
+        : AppFailure.server('OperationException: ${exception.toString()}');
   }
 
   /// Classifies any thrown error into an [AppFailure].
@@ -106,7 +108,7 @@ class AppFailure implements Exception {
     _logRaw(error);
     return _looksLikeNetwork(error?.toString() ?? '')
         ? AppFailure.network()
-        : AppFailure.server();
+        : AppFailure.server('Raw Exception: ${error?.toString()}');
   }
 
   static void _logRaw(Object? error) {

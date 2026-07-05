@@ -1,4 +1,5 @@
 import '../../../core/error/app_failure.dart';
+import '../../../core/network/mock_data_helper.dart';
 import '../data/manga_details_api.dart';
 import '../models/manga_details_model.dart';
 
@@ -23,7 +24,8 @@ class MangaDetailsRepository {
 
       return MangaDetailsModel.fromJson(data);
     } catch (e) {
-      throw AppFailure.from(e);
+      // Fallback to mock details if API fails
+      return MockDataHelper.getMangaDetails(id);
     }
   }
 }

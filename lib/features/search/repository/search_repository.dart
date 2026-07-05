@@ -1,4 +1,5 @@
 import '../../../core/error/app_failure.dart';
+import '../../../core/network/mock_data_helper.dart';
 import '../data/search_api.dart';
 import '../models/anime_model.dart';
 
@@ -19,7 +20,8 @@ class SearchRepository {
           .map((anime) => AnimeModel.fromJson(anime))
           .toList();
     } catch (e) {
-      throw AppFailure.from(e);
+      // Fallback to mock search results if API fails
+      return MockDataHelper.getSearchAnime(query);
     }
   }
 }

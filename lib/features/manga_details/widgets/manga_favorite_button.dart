@@ -102,31 +102,32 @@ class _MangaFavoriteButtonState
         widget.mangaId,
       ),
     );
+    final theme = Theme.of(context);
 
     return favorite.when(
-      loading: () => FilledButton.icon(
+      loading: () => const ActionChip(
         onPressed: null,
-        icon: const Icon(
+        avatar: Icon(
           Icons.favorite_border_rounded,
+          size: 16,
         ),
-        label: const Text(
+        label: Text(
           "Favorite",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
       error: (_, __) => const SizedBox.shrink(),
       data: (isFavorite) {
         return ScaleTransition(
           scale: _scale,
-          child: FilledButton.icon(
-            onPressed: () =>
-                _toggle(isFavorite),
-            icon: AnimatedSwitcher(
+          child: ActionChip(
+            avatar: AnimatedSwitcher(
               duration: const Duration(
                 milliseconds: 250,
               ),
-              transitionBuilder:
-                  (child, animation) =>
-                      ScaleTransition(
+              transitionBuilder: (child, animation) => ScaleTransition(
                 scale: animation,
                 child: child,
               ),
@@ -134,16 +135,23 @@ class _MangaFavoriteButtonState
                 isFavorite
                     ? Icons.favorite_rounded
                     : Icons.favorite_border_rounded,
-                key: ValueKey(
-                  isFavorite,
-                ),
+                color: isFavorite
+                    ? Colors.red
+                    : theme.colorScheme.onSurfaceVariant,
+                size: 16,
+                key: ValueKey(isFavorite),
               ),
             ),
             label: Text(
-              isFavorite
-                  ? "Saved"
-                  : "Favorite",
+              isFavorite ? "Saved" : "Favorite",
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
             ),
+            backgroundColor: isFavorite
+                ? Colors.red.withValues(alpha: 0.15)
+                : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
+            onPressed: () => _toggle(isFavorite),
           ),
         );
       },

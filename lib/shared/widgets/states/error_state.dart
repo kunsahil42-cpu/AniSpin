@@ -13,42 +13,46 @@ class ErrorState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(30),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Icon(
               Icons.cloud_off_rounded,
-              size: 80,
+              size: 50,
               color: Colors.redAccent,
-            ),
-
-            const SizedBox(height: 20),
-
-            Text(
-              "Something went wrong",
-              style: Theme.of(context)
-                  .textTheme
-                  .headlineSmall
-                  ?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
             ),
 
             const SizedBox(height: 12),
 
             Text(
-              message,
-              textAlign: TextAlign.center,
+              "Something went wrong",
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium
+                  ?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: 8),
+
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 12),
+            ),
+
+            const SizedBox(height: 16),
 
             FilledButton.icon(
               onPressed: onRetry,
-              icon: const Icon(Icons.refresh),
+              icon: const Icon(Icons.refresh, size: 16),
               label: const Text("Try Again"),
+              style: FilledButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              ),
             ),
           ],
         ),

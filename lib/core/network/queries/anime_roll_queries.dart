@@ -1,10 +1,16 @@
 class AnimeRollQueries {
   static const String randomAnime = r'''
-query RandomAnime($page: Int) {
+query RandomAnime($page: Int, $genre: String, $format: MediaFormat, $minScore: Int) {
   Page(page: $page, perPage: 1) {
+    pageInfo {
+      total
+    }
     media(
       type: ANIME
       sort: POPULARITY_DESC
+      genre: $genre
+      format: $format
+      averageScore_greater: $minScore
       isAdult: false
     ) {
       id

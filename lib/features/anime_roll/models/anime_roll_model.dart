@@ -23,6 +23,8 @@ class AnimeRollModel {
     required this.status,
   });
 
+  String get romajiTitle => title;
+
   factory AnimeRollModel.fromJson(Map<String, dynamic> json) {
     return AnimeRollModel(
       id: json['id'],

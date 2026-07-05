@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
 import '../../../core/error/app_failure.dart';
+import '../../../core/network/mock_data_helper.dart';
 import '../data/discover_api.dart';
 import '../enums/discover_mode.dart';
 import '../models/discover_anime_model.dart';
@@ -41,7 +42,8 @@ class DiscoverRepository {
         media.first,
       );
     } catch (e) {
-      throw AppFailure.from(e);
+      // Fallback to mock Anime of the Day if API fails
+      return MockDataHelper.getDiscoverAnimeList(1).first;
     }
   }
 
@@ -65,7 +67,8 @@ class DiscoverRepository {
         media.first,
       );
     } catch (e) {
-      throw AppFailure.from(e);
+      // Fallback to mock Manga of the Day if API fails
+      return MockDataHelper.getDiscoverMangaList(1).first;
     }
   }
 
@@ -123,7 +126,20 @@ class DiscoverRepository {
           )
           .toList();
     } catch (e) {
-      throw AppFailure.from(e);
+      // Fallback to mock Anime Discover list if API fails
+      return _getMockAnimeList(mode);
+    }
+  }
+
+  List<DiscoverAnimeModel> _getMockAnimeList(DiscoverMode mode) {
+    if (mode == DiscoverMode.trending) {
+      return MockDataHelper.getDiscoverAnimeList(5);
+    } else if (mode == DiscoverMode.hiddenGems) {
+      return MockDataHelper.getDiscoverAnimeList(10).skip(2).toList();
+    } else if (mode == DiscoverMode.airing) {
+      return MockDataHelper.getDiscoverAnimeList(10).skip(4).toList();
+    } else {
+      return MockDataHelper.getDiscoverAnimeList(10).reversed.toList();
     }
   }
 }

@@ -13,12 +13,14 @@ class AnimeBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final bgColor = theme.scaffoldBackgroundColor;
     final hasBanner =
         imageUrl.trim().isNotEmpty &&
         imageUrl != "null";
 
     return SizedBox(
-      height: 300,
+      height: 240,
       width: double.infinity,
       child: Stack(
         fit: StackFit.expand,
@@ -31,10 +33,10 @@ class AnimeBanner extends StatelessWidget {
                 milliseconds: 350,
               ),
               placeholder: (context, url) => Container(
-                color: Colors.grey.shade900,
+                color: bgColor,
               ),
               errorWidget: (context, url, _) => Container(
-                color: Colors.grey.shade900,
+                color: bgColor,
                 child: const Center(
                   child: Icon(
                     Icons.movie_rounded,
@@ -46,7 +48,7 @@ class AnimeBanner extends StatelessWidget {
             )
           else
             Container(
-              color: Colors.grey.shade900,
+              color: bgColor,
               child: const Center(
                 child: Icon(
                   Icons.movie_rounded,
@@ -60,8 +62,8 @@ class AnimeBanner extends StatelessWidget {
           Positioned.fill(
             child: BackdropFilter(
               filter: ImageFilter.blur(
-                sigmaX: 2,
-                sigmaY: 2,
+                sigmaX: 1.5,
+                sigmaY: 1.5,
               ),
               child: Container(
                 color: Colors.transparent,
@@ -69,20 +71,21 @@ class AnimeBanner extends StatelessWidget {
             ),
           ),
 
-          // Premium gradient
+          // Premium gradient fading into background color dynamically
           Positioned.fill(
             child: DecoratedBox(
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Color(0x00000000),
-                    Color(0x22000000),
-                    Color(0x88000000),
-                    Color(0xDD000000),
-                    Color(0xFF0F1117),
+                    Colors.transparent,
+                    bgColor.withValues(alpha: 0.2),
+                    bgColor.withValues(alpha: 0.65),
+                    bgColor.withValues(alpha: 0.9),
+                    bgColor,
                   ],
+                  stops: const [0.0, 0.4, 0.7, 0.9, 1.0],
                 ),
               ),
             ),

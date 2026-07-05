@@ -1,0 +1,517 @@
+import '../../features/home/models/home_anime_model.dart';
+import '../../features/manga_home/models/manga_home_model.dart';
+import '../../features/anime_details/models/anime_details_model.dart';
+import '../../features/manga_details/models/manga_details_model.dart';
+import '../../features/discover/models/discover_anime_model.dart';
+import '../../features/discover/models/discover_manga_model.dart';
+import '../../features/search/models/anime_model.dart';
+import '../../features/anime_roll/models/anime_roll_model.dart';
+import '../../features/manga_roll/models/manga_roll_model.dart';
+
+class MockDataHelper {
+  static final List<AnimeDetailsModel> mockAnimeList = [
+    AnimeDetailsModel(
+      id: 1001,
+      romajiTitle: "Sousou no Frieren",
+      englishTitle: "Frieren: Beyond Journey's End",
+      nativeTitle: "葬送のフリーレン",
+      description: "An elf mage and her former party members' journey to the afterlife, exploring the concept of time and human connection after defeating the Demon King.",
+      bannerImage: "https://cdn.myanimelist.net/images/anime/1015/138006l.jpg",
+      coverImage: "https://cdn.myanimelist.net/images/anime/1015/138006l.jpg",
+      averageScore: 94,
+      episodes: 28,
+      status: "FINISHED",
+      genres: ["Adventure", "Drama", "Fantasy"],
+      season: "WINTER",
+      seasonYear: 2024,
+      duration: 24,
+      format: "TV",
+      popularity: 380000,
+      studio: "Madhouse",
+    ),
+    AnimeDetailsModel(
+      id: 1002,
+      romajiTitle: "Kimetsu no Yaiba",
+      englishTitle: "Demon Slayer: Kimetsu no Yaiba",
+      nativeTitle: "鬼滅の刃",
+      description: "Tanjirou Kamado fights to turn his demonized sister Nezuko back into a human, joining the Demon Slayer Corps in a historic battle against Muzan Kibutsuji.",
+      bannerImage: "https://cdn.myanimelist.net/images/anime/1286/99889l.jpg",
+      coverImage: "https://cdn.myanimelist.net/images/anime/1286/99889l.jpg",
+      averageScore: 86,
+      episodes: 26,
+      status: "FINISHED",
+      genres: ["Action", "Fantasy", "Historical"],
+      season: "SPRING",
+      seasonYear: 2019,
+      duration: 24,
+      format: "TV",
+      popularity: 580000,
+      studio: "ufotable",
+    ),
+    AnimeDetailsModel(
+      id: 1003,
+      romajiTitle: "Jujutsu Kaisen",
+      englishTitle: "Jujutsu Kaisen",
+      nativeTitle: "呪術廻戦",
+      description: "Yuji Itadori swallows a cursed finger to save his friends, becoming the vessel of Sukuna Ryoumen, and enrolls in Tokyo Prefectural Jujutsu High School.",
+      bannerImage: "https://cdn.myanimelist.net/images/anime/1171/109222l.jpg",
+      coverImage: "https://cdn.myanimelist.net/images/anime/1171/109222l.jpg",
+      averageScore: 88,
+      episodes: 24,
+      status: "FINISHED",
+      genres: ["Action", "Supernatural", "School"],
+      season: "FALL",
+      seasonYear: 2020,
+      duration: 24,
+      format: "TV",
+      popularity: 520000,
+      studio: "MAPPA",
+    ),
+    AnimeDetailsModel(
+      id: 1004,
+      romajiTitle: "Ore dake Level Up na Ken",
+      englishTitle: "Solo Leveling",
+      nativeTitle: "나 혼자만 레벨업",
+      description: "The weakest hunter of all mankind, Sung Jin-Woo, receives a mysterious quest system that allows him to level up without limits, becoming the ultimate shadow monarch.",
+      bannerImage: "https://cdn.myanimelist.net/images/anime/1801/142390l.jpg",
+      coverImage: "https://cdn.myanimelist.net/images/anime/1801/142390l.jpg",
+      averageScore: 84,
+      episodes: 12,
+      status: "FINISHED",
+      genres: ["Action", "Adventure", "Fantasy"],
+      season: "WINTER",
+      seasonYear: 2024,
+      duration: 23,
+      format: "TV",
+      popularity: 310000,
+      studio: "A-1 Pictures",
+    ),
+    AnimeDetailsModel(
+      id: 1005,
+      romajiTitle: "Shingeki no Kyojin",
+      englishTitle: "Attack on Titan",
+      nativeTitle: "進撃の巨人",
+      description: "Humanity retreats behind massive walls to escape man-eating giants known as Titans. Eren Yeager vows to erase them after they destroy his hometown.",
+      bannerImage: "https://cdn.myanimelist.net/images/anime/10/47347l.jpg",
+      coverImage: "https://cdn.myanimelist.net/images/anime/10/47347l.jpg",
+      averageScore: 90,
+      episodes: 25,
+      status: "FINISHED",
+      genres: ["Action", "Drama", "Mystery"],
+      season: "SPRING",
+      seasonYear: 2013,
+      duration: 24,
+      format: "TV",
+      popularity: 640000,
+      studio: "Wit Studio",
+    ),
+    AnimeDetailsModel(
+      id: 1006,
+      romajiTitle: "Chainsaw Man",
+      englishTitle: "Chainsaw Man",
+      nativeTitle: "チェンソーマン",
+      description: "Denji makes a pact with his pet devil Pochita, gaining the ability to transform his body parts into chainsaws, and is recruited by the Public Safety Devil Hunters.",
+      bannerImage: "https://cdn.myanimelist.net/images/anime/1806/126216l.jpg",
+      coverImage: "https://cdn.myanimelist.net/images/anime/1806/126216l.jpg",
+      averageScore: 85,
+      episodes: 12,
+      status: "FINISHED",
+      genres: ["Action", "Comedy", "Supernatural"],
+      season: "FALL",
+      seasonYear: 2022,
+      duration: 24,
+      format: "TV",
+      popularity: 490000,
+      studio: "MAPPA",
+    ),
+    AnimeDetailsModel(
+      id: 1007,
+      romajiTitle: "Oshi no Ko",
+      englishTitle: "[Oshi No Ko]",
+      nativeTitle: "【推しの子】",
+      description: "A doctor and his deceased patient are reborn as the twins of a famous Japanese pop idol, navigating the dark side of the entertainment industry.",
+      bannerImage: "https://cdn.myanimelist.net/images/anime/1814/134440l.jpg",
+      coverImage: "https://cdn.myanimelist.net/images/anime/1814/134440l.jpg",
+      averageScore: 87,
+      episodes: 11,
+      status: "FINISHED",
+      genres: ["Drama", "Mystery", "Supernatural"],
+      season: "SPRING",
+      seasonYear: 2023,
+      duration: 30,
+      format: "TV",
+      popularity: 290000,
+      studio: "Doga Kobo",
+    ),
+    AnimeDetailsModel(
+      id: 1008,
+      romajiTitle: "Boku no Hero Academia",
+      englishTitle: "My Hero Academia",
+      nativeTitle: "僕のヒーローアカデミア",
+      description: "In a world where most humans possess superpowers, Izuku Midoriya is born quirkless but inherits the power of the ultimate hero, All Might.",
+      bannerImage: "https://cdn.myanimelist.net/images/anime/10/78745l.jpg",
+      coverImage: "https://cdn.myanimelist.net/images/anime/10/78745l.jpg",
+      averageScore: 82,
+      episodes: 13,
+      status: "FINISHED",
+      genres: ["Action", "Comedy", "Sci-Fi"],
+      season: "SPRING",
+      seasonYear: 2016,
+      duration: 24,
+      format: "TV",
+      popularity: 560000,
+      studio: "Bones",
+    ),
+    AnimeDetailsModel(
+      id: 1009,
+      romajiTitle: "One Piece",
+      englishTitle: "One Piece",
+      nativeTitle: "ONE PIECE",
+      description: "Monkey D. Luffy gathers a crew of pirates to find the legendary treasure One Piece, aiming to claim the title of Pirate King.",
+      bannerImage: "https://cdn.myanimelist.net/images/anime/1244/138851l.jpg",
+      coverImage: "https://cdn.myanimelist.net/images/anime/1244/138851l.jpg",
+      averageScore: 89,
+      episodes: 1100,
+      status: "RELEASING",
+      genres: ["Action", "Adventure", "Fantasy"],
+      season: "FALL",
+      seasonYear: 1999,
+      duration: 24,
+      format: "TV",
+      popularity: 780000,
+      studio: "Toei Animation",
+    ),
+    AnimeDetailsModel(
+      id: 1010,
+      romajiTitle: "Bleach: Sennen Kessen-hen",
+      englishTitle: "Bleach: Thousand-Year Blood War",
+      nativeTitle: "BLEACH 千年血戦篇",
+      description: "Ichigo Kurosaki enters the Soul Society's final conflict with the Quincies, led by Yhwach, in the culmination of the Bleach franchise.",
+      bannerImage: "https://cdn.myanimelist.net/images/anime/1908/135431l.jpg",
+      coverImage: "https://cdn.myanimelist.net/images/anime/1908/135431l.jpg",
+      averageScore: 91,
+      episodes: 13,
+      status: "FINISHED",
+      genres: ["Action", "Adventure", "Supernatural"],
+      season: "FALL",
+      seasonYear: 2022,
+      duration: 24,
+      format: "TV",
+      popularity: 250000,
+      studio: "Studio Pierrot",
+    ),
+  ];
+
+  static final List<MangaDetailsModel> mockMangaList = [
+    MangaDetailsModel(
+      id: 2001,
+      romajiTitle: "Berserk",
+      englishTitle: "Berserk",
+      nativeTitle: "ベルセルク",
+      description: "Guts, a former mercenary now known as the \"Black Swordsman,\" is out for revenge against his former commander Griffith, who sacrificed their comrades.",
+      bannerImage: "https://cdn.myanimelist.net/images/manga/1/157897l.jpg",
+      coverImage: "https://cdn.myanimelist.net/images/manga/1/157897l.jpg",
+      averageScore: 93,
+      chapters: 375,
+      volumes: 42,
+      status: "RELEASING",
+      genres: ["Action", "Adventure", "Drama", "Fantasy", "Horror"],
+      format: "MANGA",
+      popularity: 310000,
+      author: "Kentaro Miura",
+    ),
+    MangaDetailsModel(
+      id: 2002,
+      romajiTitle: "Monster",
+      englishTitle: "Monster",
+      nativeTitle: "MONSTER",
+      description: "Dr. Kenzo Tenma saves a young boy's life, only to discover years later that he grew up to be a charismatic psychopathic serial killer named Johan Liebert.",
+      bannerImage: "https://cdn.myanimelist.net/images/manga/3/258224l.jpg",
+      coverImage: "https://cdn.myanimelist.net/images/manga/3/258224l.jpg",
+      averageScore: 90,
+      chapters: 162,
+      volumes: 18,
+      status: "FINISHED",
+      genres: ["Drama", "Mystery", "Psychological", "Thriller"],
+      format: "MANGA",
+      popularity: 140000,
+      author: "Naoki Urasawa",
+    ),
+    MangaDetailsModel(
+      id: 2003,
+      romajiTitle: "Vagabond",
+      englishTitle: "Vagabond",
+      nativeTitle: "バガボンド",
+      description: "A fictionalized retelling of the life of legendary Japanese swordsman Musashi Miyamoto, based on Eiji Yoshikawa's novel Musashi.",
+      bannerImage: "https://cdn.myanimelist.net/images/manga/1/259070l.jpg",
+      coverImage: "https://cdn.myanimelist.net/images/manga/1/259070l.jpg",
+      averageScore: 91,
+      chapters: 327,
+      volumes: 37,
+      status: "HIATUS",
+      genres: ["Action", "Adventure", "Biography", "Historical"],
+      format: "MANGA",
+      popularity: 190000,
+      author: "Takehiko Inoue",
+    ),
+    MangaDetailsModel(
+      id: 2004,
+      romajiTitle: "Vinland Saga",
+      englishTitle: "Vinland Saga",
+      nativeTitle: "ヴィンランド・サガ",
+      description: "Thorfinn, a young warrior, seeks vengeance against his father's killer, eventually learning the true path of peace and the dream of establishing Vinland.",
+      bannerImage: "https://cdn.myanimelist.net/images/manga/2/186888l.jpg",
+      coverImage: "https://cdn.myanimelist.net/images/manga/2/186888l.jpg",
+      averageScore: 90,
+      chapters: 210,
+      volumes: 28,
+      status: "RELEASING",
+      genres: ["Action", "Adventure", "Drama", "Historical"],
+      format: "MANGA",
+      popularity: 180000,
+      author: "Makoto Yukimura",
+    ),
+    MangaDetailsModel(
+      id: 2005,
+      romajiTitle: "20th Century Boys",
+      englishTitle: "20th Century Boys",
+      nativeTitle: "20世紀少年",
+      description: "Kenji and his childhood friends realize that a mysterious cult leader named \"Friend\" is using their childhood notebook story to destroy the world.",
+      bannerImage: "https://cdn.myanimelist.net/images/manga/5/157869l.jpg",
+      coverImage: "https://cdn.myanimelist.net/images/manga/5/157869l.jpg",
+      averageScore: 89,
+      chapters: 249,
+      volumes: 22,
+      status: "FINISHED",
+      genres: ["Mystery", "Psychological", "Sci-Fi"],
+      format: "MANGA",
+      popularity: 110000,
+      author: "Naoki Urasawa",
+    ),
+    MangaDetailsModel(
+      id: 2006,
+      romajiTitle: "Oyasumi Punpun",
+      englishTitle: "Goodnight Punpun",
+      nativeTitle: "おやすみプンプン",
+      description: "A dark coming-of-age story following the life of Punpun Onodera, depicted as a caricature bird, as he deals with dysfunctional family, romance, and depression.",
+      bannerImage: "https://cdn.myanimelist.net/images/manga/3/165421l.jpg",
+      coverImage: "https://cdn.myanimelist.net/images/manga/3/165421l.jpg",
+      averageScore: 88,
+      chapters: 147,
+      volumes: 13,
+      status: "FINISHED",
+      genres: ["Drama", "Psychological", "Slice of Life"],
+      format: "MANGA",
+      popularity: 160000,
+      author: "Inio Asano",
+    ),
+    MangaDetailsModel(
+      id: 2007,
+      romajiTitle: "Hagane no Renkinjutsushi",
+      englishTitle: "Fullmetal Alchemist",
+      nativeTitle: "鋼の錬金術師",
+      description: "Brothers Edward and Alphonse Elric search for the Philosopher's Stone to restore their bodies after a failed human transmutation attempt.",
+      bannerImage: "https://cdn.myanimelist.net/images/manga/3/243675l.jpg",
+      coverImage: "https://cdn.myanimelist.net/images/manga/3/243675l.jpg",
+      averageScore: 91,
+      chapters: 116,
+      volumes: 27,
+      status: "FINISHED",
+      genres: ["Action", "Adventure", "Drama", "Fantasy"],
+      format: "MANGA",
+      popularity: 220000,
+      author: "Hiromu Arakawa",
+    ),
+    MangaDetailsModel(
+      id: 2008,
+      romajiTitle: "Slam Dunk",
+      englishTitle: "Slam Dunk",
+      nativeTitle: "SLAM DUNK",
+      description: "Hanamichi Sakuragi, a delinquent who joins Shohoku High's basketball team to impress a girl, eventually falls in love with the sport.",
+      bannerImage: "https://cdn.myanimelist.net/images/manga/2/258745l.jpg",
+      coverImage: "https://cdn.myanimelist.net/images/manga/2/258745l.jpg",
+      averageScore: 89,
+      chapters: 276,
+      volumes: 31,
+      status: "FINISHED",
+      genres: ["Comedy", "Drama", "Sports"],
+      format: "MANGA",
+      popularity: 980000,
+      author: "Takehiko Inoue",
+    ),
+    MangaDetailsModel(
+      id: 2009,
+      romajiTitle: "Kingdom",
+      englishTitle: "Kingdom",
+      nativeTitle: "キングダム",
+      description: "In ancient China's Warring States period, orphan boys Xin and Piao dream of becoming Great Generals of the Heavens, with Xin supporting Ying Zheng's dream of unification.",
+      bannerImage: "https://cdn.myanimelist.net/images/manga/2/171872l.jpg",
+      coverImage: "https://cdn.myanimelist.net/images/manga/2/171872l.jpg",
+      averageScore: 89,
+      chapters: 800,
+      volumes: 72,
+      status: "RELEASING",
+      genres: ["Action", "Drama", "Historical", "Military"],
+      format: "MANGA",
+      popularity: 88000,
+      author: "Yasuhisa Hara",
+    ),
+    MangaDetailsModel(
+      id: 2010,
+      romajiTitle: "JoJo no Kimyou na Bouken Part 7: Steel Ball Run",
+      englishTitle: "JoJo's Bizarre Adventure Part 7: Steel Ball Run",
+      nativeTitle: "ジョジョの奇妙な冒険 Part7 STEEL BALL RUN",
+      description: "Set in 1890 America, Johnny Joestar and Gyro Zeppeli race across the country in a transcontinental horse race for a grand prize, encountering mysterious corpse relics.",
+      bannerImage: "https://cdn.myanimelist.net/images/manga/3/179869l.jpg",
+      coverImage: "https://cdn.myanimelist.net/images/manga/3/179869l.jpg",
+      averageScore: 92,
+      chapters: 95,
+      volumes: 24,
+      status: "FINISHED",
+      genres: ["Action", "Adventure", "Mystery", "Supernatural"],
+      format: "MANGA",
+      popularity: 150000,
+      author: "Hirohiko Araki",
+    ),
+  ];
+
+  static AnimeDetailsModel getAnimeDetails(int id) {
+    return mockAnimeList.firstWhere(
+      (a) => a.id == id,
+      orElse: () => mockAnimeList.first,
+    );
+  }
+
+  static MangaDetailsModel getMangaDetails(int id) {
+    return mockMangaList.firstWhere(
+      (m) => m.id == id,
+      orElse: () => mockMangaList.first,
+    );
+  }
+
+  static List<HomeAnimeModel> getHomeAnimeListByIds(List<int> ids) {
+    return mockAnimeList
+        .where((a) => ids.contains(a.id))
+        .map((a) => HomeAnimeModel(
+              id: a.id,
+              title: a.englishTitle ?? a.romajiTitle,
+              coverImage: a.coverImage,
+              averageScore: a.averageScore,
+              episodes: a.episodes,
+            ))
+        .toList();
+  }
+
+  static List<MangaHomeModel> getHomeMangaListByIds(List<int> ids) {
+    return mockMangaList
+        .where((m) => ids.contains(m.id))
+        .map((m) => MangaHomeModel(
+              id: m.id,
+              title: m.englishTitle ?? m.romajiTitle,
+              coverImage: m.coverImage,
+              averageScore: m.averageScore,
+              genres: m.genres,
+              chapters: m.chapters,
+            ))
+        .toList();
+  }
+
+  static List<HomeAnimeModel> getHomeAnimeList(int count) {
+    return mockAnimeList.take(count).map((a) => HomeAnimeModel(
+      id: a.id,
+      title: a.englishTitle ?? a.romajiTitle,
+      coverImage: a.coverImage,
+      averageScore: a.averageScore,
+      episodes: a.episodes,
+    )).toList();
+  }
+
+  static List<MangaHomeModel> getHomeMangaList(int count) {
+    return mockMangaList.take(count).map((m) => MangaHomeModel(
+      id: m.id,
+      title: m.englishTitle ?? m.romajiTitle,
+      coverImage: m.coverImage,
+      averageScore: m.averageScore,
+      genres: m.genres,
+      chapters: m.chapters,
+    )).toList();
+  }
+
+  static List<DiscoverAnimeModel> getDiscoverAnimeList(int count) {
+    return mockAnimeList.take(count).map((a) => DiscoverAnimeModel(
+      id: a.id,
+      title: a.romajiTitle,
+      englishTitle: a.englishTitle,
+      coverImage: a.coverImage,
+      bannerImage: a.bannerImage,
+      averageScore: a.averageScore,
+      episodes: a.episodes,
+      genres: a.genres,
+      description: a.description,
+      status: a.status,
+    )).toList();
+  }
+
+  static List<DiscoverMangaModel> getDiscoverMangaList(int count) {
+    return mockMangaList.take(count).map((m) => DiscoverMangaModel(
+      id: m.id,
+      title: m.romajiTitle,
+      englishTitle: m.englishTitle,
+      coverImage: m.coverImage,
+      bannerImage: m.bannerImage,
+      averageScore: m.averageScore,
+      genres: m.genres,
+      description: m.description,
+      status: m.status,
+    )).toList();
+  }
+
+  static List<AnimeModel> getSearchAnime(String query) {
+    return mockAnimeList
+        .where((a) => a.romajiTitle.toLowerCase().contains(query.toLowerCase()) || 
+                      (a.englishTitle?.toLowerCase().contains(query.toLowerCase()) ?? false))
+        .map((a) => AnimeModel(
+          id: a.id,
+          title: a.romajiTitle,
+          englishTitle: a.englishTitle,
+          imageUrl: a.coverImage,
+          score: a.averageScore,
+          episodes: a.episodes,
+          status: a.status,
+        ))
+        .toList();
+  }
+
+  static AnimeRollModel getRandomAnimeRoll() {
+    final a = mockAnimeList[DateTime.now().millisecond % mockAnimeList.length];
+    return AnimeRollModel(
+      id: a.id,
+      title: a.romajiTitle,
+      englishTitle: a.englishTitle,
+      coverImage: a.coverImage,
+      bannerImage: a.bannerImage,
+      averageScore: a.averageScore,
+      episodes: a.episodes,
+      genres: a.genres,
+      description: a.description,
+      status: a.status,
+    );
+  }
+
+  static MangaRollModel getRandomMangaRoll() {
+    final m = mockMangaList[DateTime.now().millisecond % mockMangaList.length];
+    return MangaRollModel(
+      id: m.id,
+      title: m.romajiTitle,
+      englishTitle: m.englishTitle,
+      coverImage: m.coverImage,
+      bannerImage: m.bannerImage,
+      averageScore: m.averageScore,
+      chapters: m.chapters,
+      volumes: m.volumes,
+      genres: m.genres,
+      description: m.description,
+      status: m.status,
+    );
+  }
+}
