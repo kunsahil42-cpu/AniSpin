@@ -8,24 +8,30 @@ import '../widgets/manga_favorite_card.dart';
 import '../../../shared/widgets/states/error_state.dart';
 import '../../../shared/widgets/states/loading_state.dart';
 
-class FavoritesScreen extends ConsumerWidget {
+class FavoritesScreen extends ConsumerStatefulWidget {
   const FavoritesScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // Capture the app-level messenger ONCE, from a stable context, before any
-    // async gap. Showing the SnackBar from a list item's context (which the
-    // reactive Isar stream tears down on delete) is what left the auto-dismiss
-    // timer orphaned, so the bar never went away.
-    final messenger = ScaffoldMessenger.of(context);
+  ConsumerState<FavoritesScreen> createState() => _FavoritesScreenState();
+}
 
-    final animeFavorites = ref.watch(
-      favoritesProvider,
-    );
+class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
+  // ---------------------------------------------------------------------------
+  // Optimistic-deletion state (the Gmail pattern).
+  //
+  // When an item is swiped we DO NOT delete it from Isar. We only add its id
+  // here so it is hidden from the list, then show a 5-second undo bar. The
+  // permanent Isar delete happens ONLY if that bar closes for a reason other
+  // than the user tapping UNDO. This makes the delete fully reversible and
+  // keeps the database and the UI in lockstep (never delete-then-restore).
+  // ---------------------------------------------------------------------------
+  final Set<int> _pendingAnime = <int>{};
+  final Set<int> _pendingManga = <int>{};
 
-    final mangaFavorites = ref.watch(
-      mangaFavoritesProvider,
-    );
+  @override
+  Widget build(BuildContext context) {
+    final animeFavorites = ref.watch(favoritesProvider);
+    final mangaFavorites = ref.watch(mangaFavoritesProvider);
 
     return DefaultTabController(
       length: 2,
@@ -61,7 +67,12 @@ class FavoritesScreen extends ConsumerWidget {
                   ref.invalidate(favoritesProvider);
                 },
               ),
-              data: (animeList) {
+              data: (list) {
+                // Hide anything currently in its undo window.
+                final animeList = list
+                    .where((a) => !_pendingAnime.contains(a.animeId))
+                    .toList();
+
                 if (animeList.isEmpty) {
                   return _buildEmptyState(
                     context,
@@ -74,12 +85,7 @@ class FavoritesScreen extends ConsumerWidget {
 
                 return ListView.separated(
                   physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.fromLTRB(
-                    16,
-                    16,
-                    16,
-                    100,
-                  ),
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
                   itemCount: animeList.length,
                   separatorBuilder: (_, __) =>
                       const SizedBox(height: 16),
@@ -94,22 +100,13 @@ class FavoritesScreen extends ConsumerWidget {
                       crossAxisEndOffset: 0,
                       key: ValueKey("anime_${anime.animeId}"),
                       direction: DismissDirection.endToStart,
-                      // Remove from Isar AFTER the dismiss animation, so the
-                      // widget is already gone and the stream update simply
-                      // keeps the data in sync (no dismissed-widget mismatch).
-                      onDismissed: (_) async {
-                        await ref
-                            .read(favoritesControllerProvider)
-                            .removeFavorite(anime.animeId);
-
-                        _showUndoSnackBar(
-                          messenger,
-                          message: "Removed from Favorites",
-                          onUndo: () => ref
-                              .read(favoritesControllerProvider)
-                              .addFavorite(anime),
-                        );
-                      },
+                      onDismissed: (_) => _runUndoableRemoval(
+                        pending: _pendingAnime,
+                        id: anime.animeId,
+                        controller:
+                            ref.read(favoritesControllerProvider),
+                        commit: (c) => c.removeFavorite(anime.animeId),
+                      ),
                       background: _deleteBackground(),
                       child: FavoriteCard(
                         anime: anime,
@@ -140,7 +137,11 @@ class FavoritesScreen extends ConsumerWidget {
                   ref.invalidate(mangaFavoritesProvider);
                 },
               ),
-              data: (mangaList) {
+              data: (list) {
+                final mangaList = list
+                    .where((m) => !_pendingManga.contains(m.mangaId))
+                    .toList();
+
                 if (mangaList.isEmpty) {
                   return _buildEmptyState(
                     context,
@@ -153,12 +154,7 @@ class FavoritesScreen extends ConsumerWidget {
 
                 return ListView.separated(
                   physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.fromLTRB(
-                    16,
-                    16,
-                    16,
-                    100,
-                  ),
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
                   itemCount: mangaList.length,
                   separatorBuilder: (_, __) =>
                       const SizedBox(height: 16),
@@ -173,22 +169,14 @@ class FavoritesScreen extends ConsumerWidget {
                       crossAxisEndOffset: 0,
                       key: ValueKey("manga_${manga.mangaId}"),
                       direction: DismissDirection.endToStart,
-                      // BUG FIX: was calling removeFavorite() (the ANIME
-                      // method), which searched the anime collection for a
-                      // manga id and deleted nothing. Use removeMangaFavorite.
-                      onDismissed: (_) async {
-                        await ref
-                            .read(mangaFavoritesControllerProvider)
-                            .removeMangaFavorite(manga.mangaId);
-
-                        _showUndoSnackBar(
-                          messenger,
-                          message: "Removed from Favorites",
-                          onUndo: () => ref
-                              .read(mangaFavoritesControllerProvider)
-                              .addMangaFavorite(manga),
-                        );
-                      },
+                      onDismissed: (_) => _runUndoableRemoval(
+                        pending: _pendingManga,
+                        id: manga.mangaId,
+                        controller:
+                            ref.read(mangaFavoritesControllerProvider),
+                        commit: (c) =>
+                            c.removeMangaFavorite(manga.mangaId),
+                      ),
                       background: _deleteBackground(),
                       child: MangaFavoriteCard(
                         manga: manga,
@@ -212,48 +200,89 @@ class FavoritesScreen extends ConsumerWidget {
     );
   }
 
-  /// Shows the "Removed from Favorites" bar with a working UNDO.
+  // ---------------------------------------------------------------------------
+  // Core undo flow — identical for anime and manga.
+  // ---------------------------------------------------------------------------
+
+  /// Runs the optimistic swipe-to-delete + undo lifecycle for a single item.
   ///
-  /// Uses the messenger captured from a stable ancestor context so the
-  /// 5-second auto-dismiss timer is never tied to a widget that is being
-  /// disposed by the reactive list update.
-  void _showUndoSnackBar(
-    ScaffoldMessengerState messenger, {
-    required String message,
-    required Future<void> Function() onUndo,
-  }) {
-    messenger
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          behavior: SnackBarBehavior.floating,
-          margin: const EdgeInsets.all(16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
+  /// 1. Hide the item from the list (add its id to [pending]).
+  /// 2. Show the undo SnackBar and AWAIT its close reason.
+  /// 3. If the user tapped UNDO ([SnackBarClosedReason.action]) → un-hide it.
+  ///    The item was never deleted from Isar, so it simply reappears.
+  /// 4. For ANY other close reason (timeout, a newer swipe hiding this bar,
+  ///    manual dismiss…) → commit the permanent Isar delete.
+  ///
+  /// [controller] is read from Riverpod BEFORE the first await, so the commit
+  /// stays valid even if this widget is disposed while the bar is open.
+  Future<void> _runUndoableRemoval({
+    required Set<int> pending,
+    required int id,
+    required FavoritesController controller,
+    required Future<void> Function(FavoritesController c) commit,
+  }) async {
+    final messenger = ScaffoldMessenger.of(context);
+
+    // Step 1 + 2: hide, then show the bar. setState is synchronous here (it
+    // runs before the first await), so the ListView drops the dismissed item
+    // on the very next frame — no "dismissed Dismissible still in tree" error.
+    setState(() => pending.add(id));
+
+    final reason = await _showUndoBar(messenger);
+
+    // Step 4: commit the delete unless the close reason was UNDO.
+    if (reason != SnackBarClosedReason.action) {
+      await commit(controller);
+    }
+
+    // Step 3 (or cleanup after commit): drop the id from the pending set.
+    // On UNDO the item reappears; after a commit it's already gone from Isar.
+    pending.remove(id);
+    if (mounted) setState(() {});
+  }
+
+  /// Shows the "Removed from Favorites" bar and returns its close reason.
+  ///
+  /// Any bar already on screen is hidden first — its own [_runUndoableRemoval]
+  /// then sees a non-`action` reason and commits that earlier delete, so a
+  /// rapid series of swipes commits the older ones and keeps only the most
+  /// recent undoable (Gmail behaviour).
+  Future<SnackBarClosedReason> _showUndoBar(
+    ScaffoldMessengerState messenger,
+  ) {
+    messenger.hideCurrentSnackBar();
+
+    return messenger
+        .showSnackBar(
+          SnackBar(
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.all(16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+            duration: const Duration(seconds: 5),
+            content: const Row(
+              children: [
+                Icon(
+                  Icons.check_circle_rounded,
+                  color: Colors.white,
+                ),
+                SizedBox(width: 12),
+                Expanded(
+                  child: Text("Removed from Favorites"),
+                ),
+              ],
+            ),
+            action: SnackBarAction(
+              label: "UNDO",
+              // The tap itself closes the bar with SnackBarClosedReason.action;
+              // that reason is what _runUndoableRemoval keys off to restore the
+              // item, so no work is needed here.
+              onPressed: () {},
+            ),
           ),
-          duration: const Duration(seconds: 5),
-          content: Row(
-            children: [
-              const Icon(
-                Icons.check_circle_rounded,
-                color: Colors.white,
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(message),
-              ),
-            ],
-          ),
-          action: SnackBarAction(
-            label: "UNDO",
-            onPressed: () {
-              // Fire-and-forget: restore the removed item. The Isar watch
-              // stream pushes it back into the list automatically.
-              onUndo();
-            },
-          ),
-        ),
-      );
+        )
+        .closed;
   }
 
   Widget _deleteBackground() {
