@@ -389,33 +389,6 @@ class MockDataHelper {
     );
   }
 
-  static List<HomeAnimeModel> getHomeAnimeListByIds(List<int> ids) {
-    return mockAnimeList
-        .where((a) => ids.contains(a.id))
-        .map((a) => HomeAnimeModel(
-              id: a.id,
-              title: a.englishTitle ?? a.romajiTitle,
-              coverImage: a.coverImage,
-              averageScore: a.averageScore,
-              episodes: a.episodes,
-            ))
-        .toList();
-  }
-
-  static List<MangaHomeModel> getHomeMangaListByIds(List<int> ids) {
-    return mockMangaList
-        .where((m) => ids.contains(m.id))
-        .map((m) => MangaHomeModel(
-              id: m.id,
-              title: m.englishTitle ?? m.romajiTitle,
-              coverImage: m.coverImage,
-              averageScore: m.averageScore,
-              genres: m.genres,
-              chapters: m.chapters,
-            ))
-        .toList();
-  }
-
   static List<HomeAnimeModel> getHomeAnimeList(int count) {
     return mockAnimeList.take(count).map((a) => HomeAnimeModel(
       id: a.id,

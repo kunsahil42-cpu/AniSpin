@@ -14,6 +14,7 @@ query RandomManga($page: Int, $genre: String, $format: MediaFormat, $minScore: I
       isAdult: false
     ) {
       id
+      idMal
 
       title {
         romaji

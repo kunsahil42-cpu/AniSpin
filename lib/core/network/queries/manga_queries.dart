@@ -54,7 +54,8 @@ query LatestManga($page: Int) {
   Page(page: $page, perPage: 20) {
     media(
       type: MANGA
-      sort: UPDATED_AT_DESC
+      status: RELEASING
+      sort: POPULARITY_DESC
       isAdult: false
     ) {
       id

@@ -3,6 +3,7 @@ class MangaDetailsQueries {
 query GetMangaDetails($id: Int) {
   Media(id: $id, type: MANGA) {
     id
+    idMal
 
     title {
       romaji

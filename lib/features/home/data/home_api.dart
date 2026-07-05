@@ -15,12 +15,19 @@ class HomeApi {
     );
   }
 
-  Future<QueryResult> getThisSeasonAnime() {
+  Future<QueryResult> getThisSeasonAnime({
+    required String season,
+    required int seasonYear,
+  }) {
     return GraphQLService.client.query(
       QueryOptions(
         document: gql(
           HomeQueries.thisSeasonAnime,
         ),
+        variables: {
+          'season': season,
+          'seasonYear': seasonYear,
+        },
         fetchPolicy: FetchPolicy.networkOnly,
       ),
     );

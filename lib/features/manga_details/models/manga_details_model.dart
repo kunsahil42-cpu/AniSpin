@@ -1,6 +1,10 @@
 class MangaDetailsModel {
   final int id;
 
+  /// MyAnimeList id, used to bridge to Jikan when AniList data is partial.
+  /// Non-UI field.
+  final int? idMal;
+
   final String romajiTitle;
   final String? englishTitle;
   final String? nativeTitle;
@@ -27,6 +31,7 @@ class MangaDetailsModel {
 
   MangaDetailsModel({
     required this.id,
+    this.idMal,
     required this.romajiTitle,
     required this.englishTitle,
     required this.nativeTitle,
@@ -48,6 +53,8 @@ class MangaDetailsModel {
   ) {
     return MangaDetailsModel(
       id: json['id'],
+
+      idMal: json['idMal'],
 
       romajiTitle: json['title']['romaji'] ?? '',
       englishTitle: json['title']['english'],

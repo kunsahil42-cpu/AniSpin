@@ -1,11 +1,12 @@
 import '../../../core/error/app_failure.dart';
-import '../../../core/network/mock_data_helper.dart';
+import '../../../core/network/jikan/jikan_api.dart';
 import '../data/home_api.dart';
 import '../enums/home_section.dart';
 import '../models/home_anime_model.dart';
 
 class HomeRepository {
   final HomeApi _api = HomeApi();
+  final JikanApi _jikan = JikanApi();
 
   // In-memory cache
   final Map<HomeSection, List<HomeAnimeModel>> _cache = {};
@@ -43,7 +44,11 @@ class HomeRepository {
           break;
 
         case HomeSection.thisSeason:
-          result = await _api.getThisSeasonAnime();
+          final (season, seasonYear) = _currentSeason();
+          result = await _api.getThisSeasonAnime(
+            season: season,
+            seasonYear: seasonYear,
+          );
           break;
 
         case HomeSection.justReleased:
@@ -77,27 +82,85 @@ class HomeRepository {
       _cacheTime[section] = DateTime.now();
 
       return anime;
-    } catch (e) {
-      // Fallback to high-fidelity mock data if the AniList server is down/disabled.
-      final mockAnime = _getMockAnime(section);
-      _cache[section] = mockAnime;
+    } catch (_) {
+      // AniList failed (403 / 429 / 500 / network) → automatic Jikan fallback.
+      // If Jikan also fails, the AppFailure propagates and the UI shows a clean
+      // error/retry state — never mock data.
+      final anime = await _fetchAnimeFromJikan(section);
+      _cache[section] = anime;
       _cacheTime[section] = DateTime.now();
-      return mockAnime;
+      return anime;
     }
   }
 
-  List<HomeAnimeModel> _getMockAnime(HomeSection section) {
+  /// Resolves the current AniList [MediaSeason] and its year from the device
+  /// clock. December rolls into the next year's WINTER season, matching
+  /// AniList's convention.
+  (String, int) _currentSeason() {
+    final now = DateTime.now();
+    final month = now.month;
+
+    if (month == 12) {
+      return ('WINTER', now.year + 1);
+    } else if (month <= 2) {
+      return ('WINTER', now.year);
+    } else if (month <= 5) {
+      return ('SPRING', now.year);
+    } else if (month <= 8) {
+      return ('SUMMER', now.year);
+    } else {
+      return ('FALL', now.year);
+    }
+  }
+
+  /// Fetches the equivalent section from Jikan (MyAnimeList) when AniList is
+  /// unavailable. Each section has an ordered list of candidate endpoints: the
+  /// ideal (semantically-correct) one first, then lighter/more reliable ones so
+  /// a single upstream timeout never blanks the section.
+  Future<List<HomeAnimeModel>> _fetchAnimeFromJikan(HomeSection section) async {
+    final data = await _jikan.fetchListFallback(_jikanAnimePaths(section));
+    return data
+        .whereType<Map<String, dynamic>>()
+        .map(_animeFromJikan)
+        .toList();
+  }
+
+  List<String> _jikanAnimePaths(HomeSection section) {
     switch (section) {
       case HomeSection.trending:
-        return MockDataHelper.getHomeAnimeListByIds([1001, 1002, 1003, 1004, 1005]);
-      case HomeSection.thisSeason:
-        return MockDataHelper.getHomeAnimeListByIds([1006, 1007, 1008, 1009, 1010]);
-      case HomeSection.justReleased:
-        return MockDataHelper.getHomeAnimeListByIds([1001, 1003, 1006, 1004, 1010]);
-      case HomeSection.popularThisWeek:
       case HomeSection.continueWatching:
-        return MockDataHelper.getHomeAnimeListByIds([1005, 1009, 1008, 1003, 1002]);
+        return const ['/top/anime?filter=airing&limit=20'];
+      case HomeSection.thisSeason:
+        return const ['/seasons/now?limit=20'];
+      case HomeSection.justReleased:
+        return const [
+          '/top/anime?filter=airing&limit=20',
+          '/seasons/now?limit=20',
+        ];
+      case HomeSection.popularThisWeek:
+        return const [
+          '/top/anime?filter=airing&limit=20',
+          '/seasons/now?limit=20',
+        ];
     }
+  }
+
+  HomeAnimeModel _animeFromJikan(Map<String, dynamic> j) {
+    final jpg = (j['images'] as Map<String, dynamic>?)?['jpg']
+        as Map<String, dynamic>?;
+    final english = j['title_english'] as String?;
+    final score = j['score'];
+    final episodes = j['episodes'];
+
+    return HomeAnimeModel(
+      id: (j['mal_id'] as num?)?.toInt() ?? 0,
+      title: (english != null && english.isNotEmpty)
+          ? english
+          : (j['title'] as String? ?? 'Unknown'),
+      coverImage: (jpg?['large_image_url'] ?? jpg?['image_url'] ?? '') as String,
+      averageScore: score is num ? (score * 10).round() : null,
+      episodes: episodes is num ? episodes.toInt() : null,
+    );
   }
 
   /// Clear one section
