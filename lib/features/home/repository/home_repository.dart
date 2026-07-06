@@ -133,11 +133,15 @@ class HomeRepository {
       case HomeSection.thisSeason:
         return const ['/seasons/now?limit=20'];
       case HomeSection.justReleased:
+        // /seasons/now is sorted by recent start date on Jikan — ideal for
+        // "just released".  Top airing is the safety net.
         return const [
-          '/top/anime?filter=airing&limit=20',
           '/seasons/now?limit=20',
+          '/top/anime?filter=airing&limit=20',
         ];
       case HomeSection.popularThisWeek:
+        // Jikan has no "this week" filter; closest approximation is top airing
+        // sorted by score (bypopularity includes all-time; airing is current).
         return const [
           '/top/anime?filter=airing&limit=20',
           '/seasons/now?limit=20',

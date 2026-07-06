@@ -37,7 +37,9 @@ final GoRouter appRouter = GoRouter(
 
     GoRoute(
       path: '/search',
-      builder: (context, state) => const SearchScreen(),
+      builder: (context, state) => SearchScreen(
+        initialIsManga: state.uri.queryParameters['type'] == 'manga',
+      ),
     ),
 
     GoRoute(

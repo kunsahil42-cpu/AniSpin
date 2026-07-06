@@ -5,7 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:go_router/go_router.dart';
 import '../../tracker/models/reading_progress.dart';
 import '../../tracker/providers/tracker_providers.dart';
-import '../../manga_details/models/chapter_model.dart';
+import '../../manga_details/providers/manga_details_provider.dart';
 
 class MangaReaderScreen extends ConsumerStatefulWidget {
   final int mangaId;
@@ -36,12 +36,10 @@ class MangaReaderScreen extends ConsumerStatefulWidget {
 class _MangaReaderScreenState extends ConsumerState<MangaReaderScreen> {
   late PageController _pageController;
   late ScrollController _scrollController;
-  late ChapterModel _chapter;
   
   bool _isHorizontal = true; // Layout toggle
   bool _showOverlays = true;
   int _currentPage = 1;
-  int _totalPages = 12;
 
   // Zoom parameters
   final Map<int, TransformationController> _transformationControllers = {};
@@ -49,38 +47,33 @@ class _MangaReaderScreenState extends ConsumerState<MangaReaderScreen> {
   @override
   void initState() {
     super.initState();
-    _chapter = ChapterModel.mock(widget.mangaId, widget.chapterNumber);
-    _totalPages = _chapter.pages.length;
     _pageController = PageController();
     _scrollController = ScrollController();
     
     // Configure immersive mode
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-
-    // Initial progress save
-    _saveReadingProgress();
   }
 
-  void _onPageChanged(int index) {
+  void _onPageChanged(int index, List<String> pages) {
     setState(() {
       _currentPage = index + 1;
     });
     
     // Save progress
-    _saveReadingProgress();
+    _saveReadingProgress(pages.length);
 
     // Preload next page
-    if (index + 1 < _totalPages) {
+    if (index + 1 < pages.length) {
       precacheImage(
-        CachedNetworkImageProvider(_chapter.pages[index + 1]),
+        CachedNetworkImageProvider(pages[index + 1]),
         context,
       );
     }
   }
 
-  void _saveReadingProgress() {
+  void _saveReadingProgress(int totalPages) {
     final repo = ref.read(readingProgressRepositoryProvider);
-    final percentage = _currentPage / _totalPages;
+    final percentage = _currentPage / totalPages;
 
     final progress = ReadingProgress()
       ..mangaId = widget.mangaId
@@ -95,7 +88,7 @@ class _MangaReaderScreenState extends ConsumerState<MangaReaderScreen> {
       ..lastReadAt = DateTime.now();
 
     // Mark as completed if read last page
-    if (_currentPage == _totalPages) {
+    if (_currentPage == totalPages) {
       final completed = List<int>.from(progress.completedChapters);
       if (!completed.contains(widget.chapterNumber)) {
         completed.add(widget.chapterNumber);
@@ -162,145 +155,230 @@ class _MangaReaderScreenState extends ConsumerState<MangaReaderScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: Stack(
-        children: [
-          // Reader Content
-          GestureDetector(
-            onTap: _toggleOverlays,
-            child: _isHorizontal ? _buildHorizontalReader() : _buildVerticalReader(),
-          ),
+    final pagesAsync = ref.watch(mangaChapterPagesProvider(ChapterPagesArg(
+      mangaId: widget.mangaId,
+      chapterNumber: widget.chapterNumber,
+    )));
 
-          // Header Overlay
-          if (_showOverlays)
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Color(0xE6000000), Colors.transparent],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.arrow_back, color: Colors.white),
-                      onPressed: () => context.pop(),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            widget.romajiTitle,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            'Chapter ${widget.chapterNumber} / ${widget.totalChapters}',
-                            style: const TextStyle(
-                              color: Colors.white70,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    IconButton(
-                      icon: Icon(
-                        _isHorizontal ? Icons.view_headline_rounded : Icons.view_carousel_rounded,
-                        color: Colors.white,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _isHorizontal = !_isHorizontal;
-                        });
-                      },
-                    ),
-                  ],
-                ),
+    // Track initial load side-effect
+    pagesAsync.whenData((pages) {
+      if (pages.isNotEmpty) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            _saveReadingProgress(pages.length);
+          }
+        });
+      }
+    });
+
+    return pagesAsync.when(
+      loading: () => const Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(
+          child: CircularProgressIndicator(color: Color(0xFF7C4DFF)),
+        ),
+      ),
+      error: (err, stack) => Scaffold(
+        backgroundColor: Colors.black,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () => context.pop(),
+          ),
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline, size: 60, color: Colors.white30),
+              const SizedBox(height: 16),
+              const Text(
+                'Failed to load pages.',
+                style: TextStyle(color: Colors.white70, fontSize: 16),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => ref.invalidate(mangaChapterPagesProvider(ChapterPagesArg(
+                  mangaId: widget.mangaId,
+                  chapterNumber: widget.chapterNumber,
+                ))),
+                child: const Text('Retry'),
+              ),
+            ],
+          ),
+        ),
+      ),
+      data: (pages) {
+        if (pages.isEmpty) {
+          return Scaffold(
+            backgroundColor: Colors.black,
+            appBar: AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                onPressed: () => context.pop(),
               ),
             ),
+            body: const Center(
+              child: Text(
+                'No pages found for this chapter.',
+                style: TextStyle(color: Colors.white70),
+              ),
+            ),
+          );
+        }
 
-          // Bottom Navigation Overlay
-          if (_showOverlays)
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Colors.transparent, Color(0xE6000000)],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    // Chapter navigator
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        // Adjust currentPage if it exceeds the new pages length
+        if (_currentPage > pages.length) {
+          _currentPage = pages.length;
+        }
+
+        return Scaffold(
+          backgroundColor: Colors.black,
+          body: Stack(
+            children: [
+              // Reader Content
+              GestureDetector(
+                onTap: _toggleOverlays,
+                child: _isHorizontal 
+                    ? _buildHorizontalReader(pages) 
+                    : _buildVerticalReader(pages),
+              ),
+
+              // Header Overlay
+              if (_showOverlays)
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Color(0xE6000000), Colors.transparent],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                    ),
+                    child: Row(
                       children: [
                         IconButton(
-                          icon: const Icon(Icons.skip_previous, color: Colors.white),
-                          onPressed: widget.chapterNumber > 1
-                              ? () => _navigateToChapter(widget.chapterNumber - 1)
-                              : null,
+                          icon: const Icon(Icons.arrow_back, color: Colors.white),
+                          onPressed: () => context.pop(),
                         ),
-                        Text(
-                          'Page $_currentPage of $_totalPages',
-                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                widget.romajiTitle,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                'Chapter ${widget.chapterNumber} / ${widget.totalChapters}',
+                                style: const TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                         IconButton(
-                          icon: const Icon(Icons.skip_next, color: Colors.white),
-                          onPressed: widget.chapterNumber < widget.totalChapters
-                              ? () => _navigateToChapter(widget.chapterNumber + 1)
-                              : null,
+                          icon: Icon(
+                            _isHorizontal ? Icons.view_headline_rounded : Icons.view_carousel_rounded,
+                            color: Colors.white,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _isHorizontal = !_isHorizontal;
+                            });
+                          },
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
-                    // Progress Slider
-                    if (_isHorizontal)
-                      Slider(
-                        activeColor: const Color(0xFF7C4DFF),
-                        inactiveColor: Colors.white24,
-                        value: _currentPage.toDouble(),
-                        min: 1.0,
-                        max: _totalPages.toDouble(),
-                        divisions: _totalPages - 1,
-                        onChanged: (val) {
-                          _pageController.jumpToPage(val.toInt() - 1);
-                        },
-                      ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-        ],
-      ),
+
+              // Bottom Navigation Overlay
+              if (_showOverlays)
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Colors.transparent, Color(0xE6000000)],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        // Chapter navigator
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.skip_previous, color: Colors.white),
+                              onPressed: widget.chapterNumber > 1
+                                  ? () => _navigateToChapter(widget.chapterNumber - 1)
+                                  : null,
+                            ),
+                            Text(
+                              'Page $_currentPage of ${pages.length}',
+                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.skip_next, color: Colors.white),
+                              onPressed: widget.chapterNumber < widget.totalChapters
+                                  ? () => _navigateToChapter(widget.chapterNumber + 1)
+                                  : null,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        // Progress Slider
+                        if (_isHorizontal)
+                          Slider(
+                            activeColor: const Color(0xFF7C4DFF),
+                            inactiveColor: Colors.white24,
+                            value: _currentPage.toDouble(),
+                            min: 1.0,
+                            max: pages.length.toDouble(),
+                            divisions: pages.length - 1,
+                            onChanged: (val) {
+                              _pageController.jumpToPage(val.toInt() - 1);
+                            },
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
     );
   }
 
-  Widget _buildHorizontalReader() {
+  Widget _buildHorizontalReader(List<String> pages) {
     return PageView.builder(
       controller: _pageController,
-      onPageChanged: _onPageChanged,
-      itemCount: _totalPages,
+      onPageChanged: (idx) => _onPageChanged(idx, pages),
+      itemCount: pages.length,
       itemBuilder: (context, index) {
         final controller = _transformationControllers.putIfAbsent(
           index,
@@ -315,7 +393,7 @@ class _MangaReaderScreenState extends ConsumerState<MangaReaderScreen> {
             child: GestureDetector(
               onDoubleTap: () => _doubleTapZoom(index),
               child: CachedNetworkImage(
-                imageUrl: _chapter.pages[index],
+                imageUrl: pages[index],
                 fit: BoxFit.contain,
                 placeholder: (_, __) => const Center(
                   child: CircularProgressIndicator(color: Color(0xFF7C4DFF)),
@@ -331,19 +409,19 @@ class _MangaReaderScreenState extends ConsumerState<MangaReaderScreen> {
     );
   }
 
-  Widget _buildVerticalReader() {
+  Widget _buildVerticalReader(List<String> pages) {
     return NotificationListener<ScrollNotification>(
       onNotification: (notification) {
         if (_scrollController.hasClients) {
           final extent = _scrollController.position.pixels;
           final max = _scrollController.position.maxScrollExtent;
           if (max > 0) {
-            final page = ((extent / max) * _totalPages).clamp(1.0, _totalPages.toDouble()).toInt();
+            final page = ((extent / max) * pages.length).clamp(1.0, pages.length.toDouble()).toInt();
             if (page != _currentPage) {
               setState(() {
                 _currentPage = page;
               });
-              _saveReadingProgress();
+              _saveReadingProgress(pages.length);
             }
           }
         }
@@ -352,7 +430,7 @@ class _MangaReaderScreenState extends ConsumerState<MangaReaderScreen> {
       child: ListView.separated(
         controller: _scrollController,
         padding: const EdgeInsets.symmetric(vertical: 80),
-        itemCount: _totalPages,
+        itemCount: pages.length,
         separatorBuilder: (_, __) => const Divider(height: 20, color: Colors.white10),
         itemBuilder: (context, index) {
           final controller = _transformationControllers.putIfAbsent(
@@ -367,7 +445,7 @@ class _MangaReaderScreenState extends ConsumerState<MangaReaderScreen> {
             child: GestureDetector(
               onDoubleTap: () => _doubleTapZoom(index),
               child: CachedNetworkImage(
-                imageUrl: _chapter.pages[index],
+                imageUrl: pages[index],
                 fit: BoxFit.fitWidth,
                 placeholder: (_, __) => const SizedBox(
                   height: 400,

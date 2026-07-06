@@ -3,14 +3,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../shared/widgets/async_network_view.dart';
 import '../../../shared/widgets/states/empty_state.dart';
+import '../models/anime_model.dart';
+import '../models/manga_model.dart';
 import '../providers/search_provider.dart';
 import '../widgets/anime_tile.dart';
+import '../widgets/manga_tile.dart';
 import '../widgets/empty_widget.dart';
 import '../widgets/loading_widget.dart';
 import '../widgets/search_field.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
-  const SearchScreen({super.key});
+  /// Whether the Manga tab should be selected when the screen opens.
+  final bool initialIsManga;
+
+  const SearchScreen({super.key, this.initialIsManga = false});
 
   @override
   ConsumerState<SearchScreen> createState() =>
@@ -23,6 +29,7 @@ class _SearchScreenState
       TextEditingController();
 
   String _query = '';
+  late bool _isManga = widget.initialIsManga;
 
   @override
   void dispose() {
@@ -32,17 +39,40 @@ class _SearchScreenState
 
   @override
   Widget build(BuildContext context) {
-    final searchResult = ref.watch(
-      animeSearchProvider(_query),
-    );
+    final searchResult = _isManga
+        ? ref.watch(mangaSearchProvider(_query))
+        : ref.watch(animeSearchProvider(_query));
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Search Anime"),
+        title: Text(_isManga ? "Search Manga" : "Search Anime"),
         centerTitle: true,
       ),
       body: Column(
         children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: SegmentedButton<bool>(
+              segments: const [
+                ButtonSegment<bool>(
+                  value: false,
+                  label: Text('Anime'),
+                  icon: Icon(Icons.movie_outlined),
+                ),
+                ButtonSegment<bool>(
+                  value: true,
+                  label: Text('Manga'),
+                  icon: Icon(Icons.book_outlined),
+                ),
+              ],
+              selected: {_isManga},
+              onSelectionChanged: (newSelection) {
+                setState(() {
+                  _isManga = newSelection.first;
+                });
+              },
+            ),
+          ),
           SearchField(
             controller: _controller,
             onChanged: () {
@@ -58,12 +88,14 @@ class _SearchScreenState
                     value: searchResult,
                     loading: () => const LoadingWidget(),
                     onRetry: () => ref.invalidate(
-                      animeSearchProvider(_query),
+                      _isManga
+                          ? mangaSearchProvider(_query)
+                          : animeSearchProvider(_query),
                     ),
-                    data: (animeList) {
-                      if (animeList.isEmpty) {
-                        return const EmptyState(
-                          title: "No Anime Found",
+                    data: (results) {
+                      if (results.isEmpty) {
+                        return EmptyState(
+                          title: _isManga ? "No Manga Found" : "No Anime Found",
                           subtitle:
                               "Try searching with a different keyword.",
                           icon:
@@ -72,13 +104,16 @@ class _SearchScreenState
                       }
 
                       return ListView.builder(
-                        itemCount: animeList.length,
+                        itemCount: results.length,
                         itemBuilder:
                             (context, index) {
-                          return AnimeTile(
-                            anime:
-                                animeList[index],
-                          );
+                          final item = results[index];
+                          if (item is MangaModel) {
+                            return MangaTile(manga: item);
+                          } else if (item is AnimeModel) {
+                            return AnimeTile(anime: item);
+                          }
+                          return const SizedBox.shrink();
                         },
                       );
                     },

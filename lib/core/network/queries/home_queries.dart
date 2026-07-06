@@ -1,5 +1,5 @@
 class HomeQueries {
-  // 🔥 Trending
+  // 🔥 Trending — ranked by AniList's live trending score (recalculated hourly)
   static const String trendingAnime = r'''
 query TrendingAnime {
   Page(page: 1, perPage: 20) {
@@ -51,14 +51,18 @@ query ThisSeasonAnime($season: MediaSeason, $seasonYear: Int) {
 }
 ''';
 
-  // 🆕 Just Released — most recently premiered titles that are actually airing
+  // 🆕 Just Released — most recently started airing titles, sorted by newest
+  //   start date so the freshest premieres appear first.
+  //   startDate_greater is passed at call time (30 days ago) so only genuinely
+  //   recent shows appear rather than long-running classics.
   static const String justReleasedAnime = r'''
-query JustReleasedAnime {
+query JustReleasedAnime($startDateGreater: FuzzyDateInt) {
   Page(page: 1, perPage: 20) {
     media(
       type: ANIME
       status: RELEASING
-      sort: POPULARITY_DESC
+      sort: [START_DATE_DESC, SCORE_DESC]
+      startDate_greater: $startDateGreater
       isAdult: false
     ) {
       id
@@ -77,14 +81,15 @@ query JustReleasedAnime {
 }
 ''';
 
-  // 🏆 Popular This Week
+  // 🏆 Popular This Week — highest rated and most popular airing anime of the current week.
+  //   Uses TRENDING_DESC to capture active weekly popularity and SCORE_DESC for quality.
   static const String popularThisWeek = r'''
-query PopularThisWeek {
+query PopularThisWeekAnime {
   Page(page: 1, perPage: 20) {
     media(
       type: ANIME
       status: RELEASING
-      sort: TRENDING_DESC
+      sort: [TRENDING_DESC, SCORE_DESC]
       isAdult: false
     ) {
       id

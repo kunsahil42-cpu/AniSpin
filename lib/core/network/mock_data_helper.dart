@@ -5,6 +5,7 @@ import '../../features/manga_details/models/manga_details_model.dart';
 import '../../features/discover/models/discover_anime_model.dart';
 import '../../features/discover/models/discover_manga_model.dart';
 import '../../features/search/models/anime_model.dart';
+import '../../features/search/models/manga_model.dart';
 import '../../features/anime_roll/models/anime_roll_model.dart';
 import '../../features/manga_roll/models/manga_roll_model.dart';
 
@@ -451,6 +452,22 @@ class MockDataHelper {
           score: a.averageScore,
           episodes: a.episodes,
           status: a.status,
+        ))
+        .toList();
+  }
+
+  static List<MangaModel> getSearchManga(String query) {
+    return mockMangaList
+        .where((m) => m.romajiTitle.toLowerCase().contains(query.toLowerCase()) || 
+                      (m.englishTitle?.toLowerCase().contains(query.toLowerCase()) ?? false))
+        .map((m) => MangaModel(
+          id: m.id,
+          title: m.romajiTitle,
+          englishTitle: m.englishTitle,
+          imageUrl: m.coverImage,
+          score: m.averageScore,
+          chapters: m.chapters,
+          status: m.status,
         ))
         .toList();
   }

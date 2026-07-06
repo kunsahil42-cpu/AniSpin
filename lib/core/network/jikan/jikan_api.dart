@@ -43,7 +43,7 @@ class JikanApi {
         completer.completeError(e, s);
       }
       await Future<void>.delayed(_minGap);
-    });
+    }).catchError((_) {});
     return completer.future;
   }
 

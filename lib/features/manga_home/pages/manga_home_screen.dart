@@ -23,6 +23,14 @@ class MangaHomeScreen extends ConsumerWidget {
       shrinkWrap: embed,
       physics: embed ? const NeverScrollableScrollPhysics() : null,
       children: [
+        // Search bar → opens the full search screen with Manga preselected
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+          child: _MangaSearchBar(
+            onTap: () => context.push('/search?type=manga'),
+          ),
+        ),
+
         // Continue Reading Section
         continueReading.when(
           data: (progressList) {
@@ -88,11 +96,11 @@ class MangaHomeScreen extends ConsumerWidget {
 
         const SizedBox(height: 20),
 
-        // Popular Section
+        // Best Ongoing Section
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           child: Text(
-            '⭐ Popular Manga',
+            '🆕 Best Ongoing',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
         ),
@@ -100,7 +108,7 @@ class MangaHomeScreen extends ConsumerWidget {
 
         const SizedBox(height: 20),
 
-        // Latest Section
+        // Latest Releases Section
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           child: Text(
@@ -108,15 +116,27 @@ class MangaHomeScreen extends ConsumerWidget {
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
         ),
+        const _MangaSectionList(section: MangaHomeSection.latestReleases),
+
+        const SizedBox(height: 20),
+
+        // Top Rated Picks Section
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          child: Text(
+            '🌟 Top Rated Picks',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+        ),
         const _MangaSectionList(section: MangaHomeSection.latest),
 
         const SizedBox(height: 20),
 
-        // Manga of the Week Section
+        // Popular This Week Section
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           child: Text(
-            '🏆 Manga of the Week',
+            '🏆 Popular This Week',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
         ),
@@ -136,6 +156,53 @@ class MangaHomeScreen extends ConsumerWidget {
         centerTitle: true,
       ),
       body: content,
+    );
+  }
+}
+
+/// A tappable, read-only search bar. Tapping routes to the full search screen
+/// (with the Manga tab preselected) rather than embedding a live query here,
+/// so all search logic stays in the search feature.
+class _MangaSearchBar extends StatelessWidget {
+  final VoidCallback onTap;
+
+  const _MangaSearchBar({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Material(
+      color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          height: 52,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: theme.colorScheme.outline.withValues(alpha: 0.12),
+            ),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                Icons.search_rounded,
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'Search manga…',
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

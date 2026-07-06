@@ -1,4 +1,5 @@
 class ChapterModel {
+  final String? id;
   final int number;
   final String title;
   final String scanGroup;
@@ -7,6 +8,7 @@ class ChapterModel {
   final List<String> pages;
 
   ChapterModel({
+    this.id,
     required this.number,
     required this.title,
     required this.scanGroup,
@@ -24,6 +26,7 @@ class ChapterModel {
     });
 
     return ChapterModel(
+      id: null,
       number: chapterNumber,
       title: 'Chapter $chapterNumber: An Unexpected Journey',
       scanGroup: 'Aurora Scanlations',
